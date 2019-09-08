@@ -1,50 +1,38 @@
 # -*- coding: UTF-8 -*-
-import netaddr
-import shlex
-from scapy.all import *
-from sploitkit import Config, Module, Option
+from sploitkit.utils.dict import ExpiringDict
+
+from generic import *
 
 
 DRONE_REGEX = {
 #    'Bebop':  re.compile(r""),
-    'C-me':   re.compile(r"C-me-[0-9a-f]{5}"),
-    'Flitt':  re.compile(r"Flitt-\d{6}"),
+    'C-me':   re.compile(r"C-me[_\-][0-9a-f]{5}"),
+    'Flitt':  re.compile(r"Flitt[_\-]\d{6}"),
 #    'Parrot': re.compile(r""),
 #    'Tello':  re.compile(r""),
 }
-EXTRA_OUI = {
-    '90:AF:B7': "Hobbico Inc",
-}
-TARGET_REGEX = re.compile(r"^(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
-                          r"(?P<power>\-?\d+)\s+"
-                          r"(?P<beacons>\d+)\s+"
-                          r"(?P<data>\d+)\s+"
-                          r"(?P<prate>\d+)\s+"
-                          r"(?P<channel>\d+)\s+"
-                          r"(?P<mb>\w+)\s+"
-                          r"(?P<enc>\w+)\s+"
-                          r"(?P<cipher>\w+)\s+"
-                          r"(?P<auth>\w+)\s+"
-                          r"(?P<essid>[\w\-\.]+)$")
 
 
-class FindModule(Module):
+class SniffModule(Module):
     config = Config({
         Option(
             'DURATION',
             "WiFi beacon capture duration",
             False,
             validate=lambda s, x: isinstance(x, int),
-        ): 10,
+        ): 300,
     })
+    path = "auxiliary/wifi"
 
-    def run(self, filter=lambda *x: True):
+    def run(self, filter_func=lambda *x: True):
+        self.logger.warning("Press Ctrl+C to interrupt")
         mon_if = self.console.state['MONITOR_IF']
         if mon_if is None:
             self.logger.warning("No interface set in monitor mode")
             return
         to = self.config.option("DURATION").value
-        self.console.state.setdefault("TARGETS", {})
+        self.console.state.setdefault("TARGETS", ExpiringDict(max_age=300))
+        self.console.state['TARGETS'].unlock()
         for line in self.console._jobs.run_iter("sudo airodump-ng {}"
                                                 .format(mon_if), timeout=to):
             _ = TARGET_REGEX.search(line)
@@ -53,17 +41,19 @@ class FindModule(Module):
             data = [
                 _.group("essid"),
                 _.group("bssid"),
-                _.group("channel"),
+                int(_.group("channel")),
                 _.group("enc"),
                 _.group("cipher"),
                 _.group("auth"),
             ]
-            if filter(*data):
-                self.console.state['TARGETS'][data[0]] = data[1:]
-                self.logger.info("{} ({})".format(*data[:2]))
+            if filter_func(*data):
+                if data[0] not in self.console.state['TARGETS'].keys():
+                    self.console.state['TARGETS'][data[0]] = data[1:]
+                    self.logger.info("{} ({})".format(*data[:2]))
+        self.console.state['TARGETS'].lock()
 
 
-class FindSsids(FindModule):
+class FindSsids(SniffModule):
     """ Scan for any SSID's.
     
     Author:  Alexandre D'Hondt
@@ -73,7 +63,7 @@ class FindSsids(FindModule):
         super(FindSsids, self).run()
 
 
-class FindTargets(FindModule):
+class FindTargets(SniffModule):
     """ Scan for SSID's of known drones.
     
     Author:  Alexandre D'Hondt
@@ -85,4 +75,4 @@ class FindTargets(FindModule):
                 if regex.match(essid):
                     return True
             return False
-        super(FindSsids, self).run(filter=drone_filter)
+        super(FindTargets, self).run(filter_func=drone_filter)
