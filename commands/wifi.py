@@ -6,6 +6,10 @@ from lib.wifi import *
 
 class Scan(Command, ScanMixin):
     """ Scan for targets """
+    def __init__(self, *args, **kwargs):
+        super(Scan, self).__init__(*args, **kwargs)
+        self._filter_func = drone_filter
+    
     def complete_keys(self):
         self.console.root.interfaces  # this triggers a refresh for INTERFACES
         return [i for i, mon in self.console.state['INTERFACES'].items() if mon]
