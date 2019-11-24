@@ -15,7 +15,7 @@ class DronesploitConsole(FrameworkConsole):
         self.interfaces
         self.state['TARGETS'] = ExpiringDict(max_age=300)
         super(DronesploitConsole, self).__init__(*args, **kwargs)
-
+    
     @property
     def interfaces(self):
         d = self.state['INTERFACES'] = {}
@@ -33,7 +33,7 @@ class DronesploitConsole(FrameworkConsole):
 
 if __name__ == '__main__':
     parser.add_argument("--dev", action="store_true", help="development mode")
-    initialize(globals(), sudo=True)
+    initialize(exit_at_interrupt=False, sudo=True)
     DronesploitConsole(
         "DroneSploit",
         banner_section_styles={'title': {'fgcolor': "random"}},
