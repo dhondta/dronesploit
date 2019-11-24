@@ -25,7 +25,7 @@ $ python3 main.py
 
 At startup, a banner is shown and a summary of the available modules is shown.
 
-![](/img/dronesploit.png "DroneSploit startup screen")
+![](img/dronesploit.png "DroneSploit startup screen")
 
 !!! note "Disabled modules"
     
@@ -33,11 +33,11 @@ At startup, a banner is shown and a summary of the available modules is shown.
 
 ## 2. Getting help
 
-![](/img/help.png "Getting help in DroneSploit")
+![](img/help.png "Getting help in DroneSploit")
 
 ## 3. Listing available modules
 
-![](/img/modules.png "Listing modules available in DroneSploit")
+![](img/modules.png "Listing modules available in DroneSploit")
 
 !!! note "Disabled modules"
     
@@ -47,11 +47,11 @@ At startup, a banner is shown and a summary of the available modules is shown.
 
 The `toggle` command allows to toggle the WiFi mode for an interface. It autocompletes through the list of WiFi interfaces present on the system.
 
-![](/img/monitor-mode.png "Enabling the monitor mode")
+![](img/monitor-mode.png "Enabling the monitor mode")
 
 When executed, it switches between the managed and monitor modes.
 
-![](/img/managed-mode.png "Disabling the monitor mode")
+![](img/managed-mode.png "Disabling the monitor mode")
 
 ## 5. Scanning for targets
 
