@@ -20,9 +20,11 @@ class SniffModule(WifiModule, ScanMixin):
     path = "auxiliary/wifi"
     requirements = {'state': {"INTERFACES": {None: True}}}
     
-    def run(self):
-        _ = [i for i, mon in self.console.state['INTERFACES'].items() if mon]
-        ScanMixin.run(self, _[0], self.config.option('TIMEOUT').value)
+    def run(self, filter_func=lambda *a, **kw: True):
+        self._filter_func = filter_func
+        ScanMixin.run(self, self.config.option('INTERFACE').value,
+                            self.config.option('TIMEOUT').value)
+        delattr(self, "_filter_func")
 
 
 class FindSsids(SniffModule):
@@ -34,9 +36,4 @@ class FindSsids(SniffModule):
 class FindTargets(SniffModule):
     """ Scan for SSID's of known drones. """
     def run(self):
-        def drone_filter(essid, *data):
-            for _, regex in DRONE_REGEX.items():
-                if regex.match(essid):
-                    return True
-            return False
         super(FindTargets, self).run(filter_func=drone_filter)
