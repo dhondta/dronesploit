@@ -4,9 +4,9 @@ from time import time
 from sploitkit import Config, Module, Option, Path
 
 
-__all__ = ["re", "time", "Config", "Module", "Option", "Path", "ScanMixin",
-           "WifiModule", "WifiAttackModule", "DRONE_REGEX", "STATION_REGEX",
-           "TARGET_REGEX", "WPA_HANDSHAKE_REGEX"]
+__all__ = ["drone_filter", "re", "time", "Config", "Module", "Option", "Path",
+           "ScanMixin", "WifiModule", "WifiAttackModule", "DRONE_REGEX",
+           "STATION_REGEX", "TARGET_REGEX", "WPA_HANDSHAKE_REGEX"]
 
 
 DRONE_REGEX = {
@@ -36,6 +36,13 @@ WPA_HANDSHAKE_REGEX = re.compile(r"WPA handshake\:\s+"
                                  r"(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})")
 
 
+def drone_filter(essid):
+    for _, regex in DRONE_REGEX.items():
+        if regex.match(essid):
+            return True
+    return False
+
+
 class ScanMixin(object):
     """ Mixin class for use with Command and Module """
     def run(self, interface, timeout=300):
@@ -54,11 +61,13 @@ class ScanMixin(object):
                     v = _.group(k)
                     data[k] = int(v) if v.isdigit() else v
                 data['password'] = None
-                for drone, regex in DRONE_REGEX.items():
-                    e = data['essid']
-                    if regex.match(e) and e not in t.keys():
-                        self.logger.debug("Found a {} ({})".format(drone, e))
-                        t[e] = data
+                e = data['essid']
+                if self._filter_func(e):
+                    if e not in t.keys():
+                        self.logger.info("Found {}".format(e))
+                    else:
+                        data['password'] = t[e].get('password')
+                    t[e] = data
         finally:
             t.lock()
 
