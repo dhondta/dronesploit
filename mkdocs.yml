@@ -1,0 +1,25 @@
+site_name: "DroneSploit - A Metasploit-like console for hacking drones"
+repo_url: https://github.com/dhondta/dronesploit
+site_author: dhondta
+docs_dir: docs
+nav:
+  - Introduction: index.md
+  - 'Quick Start': quickstart.md
+  - Scenarios: scenarios.md
+  - Scenarios:
+    - 'Hobbico C-me': hobbico-cme.md
+    - 'Hobbico Flitt': hobbico-flitt.md
+    - 'DJI Tello': dji-tello.md
+extra:
+  mailto: alexandre.dhondt@gmail.com
+theme: readthedocs
+extra_javascript:
+  - js/collapsible-navbar.js
+use_directory_urls: false
+markdown_extensions:
+  - admonition
+  - codehilite:
+      linenums: true
+  - pymdownx.details
+  - toc:
+      permalink: True
