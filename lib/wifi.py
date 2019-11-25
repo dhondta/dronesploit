@@ -10,11 +10,11 @@ __all__ = ["drone_filter", "re", "time", "Config", "Module", "Option", "Path",
 
 
 DRONE_REGEX = {
-#    'Bebop':  re.compile(r""),
-    'C-me':   re.compile(r"C-me[_\-][0-9a-f]{5}"),
-    'Flitt':  re.compile(r"Flitt[_\-]\d{6}"),
-#    'Parrot': re.compile(r""),
-#    'Tello':  re.compile(r""),
+    'C-me':           re.compile(r"C-me[_\-][0-9a-f]{5}"),
+    'Flitt':          re.compile(r"Flitt[_\-]\d{6}"),
+    'Parrot Bebop':   re.compile(r"Bebop\-[0-9A-F]{6}"),
+    'Parrot Bebop 2': re.compile(r"Bebop2\-[0-9A-F]{6}"),
+    'DJI Tello':      re.compile(r"TELLO\-[0-9A-F]{6}"),
 }
 IW_REGEX = re.compile(r"(?m)(?P<name>[a-z][a-z0-9]*)\s+"
                       r"IEEE\s(?P<techno>[a-zA-Z0-9\.])\s+"
@@ -87,7 +87,7 @@ class WifiModule(Module):
     
     def preload(self):
         return self.prerun()
-
+    
     def prerun(self):
         if len(self.console.root.mon_interfaces) == 0:
             self.logger.warning("No interface in monitor mode defined ; please"
@@ -108,7 +108,7 @@ class WifiAttackModule(WifiModule):
     })
     
     def preload(self):
-        if super().preload() is False:
+        if super(WifiAttackModule, self).preload() is False:
             return False
         _ = self.console.state['TARGETS']
         if len(_) == 0:

@@ -16,7 +16,7 @@ class Deauth(WifiAttackModule):
             True,
             validate=lambda s, v: re.match(r"(?:[0-9A-F]{2}\:){5}[0-9A-F]{2}", \
                                            v) is not None,
-        ): "00:00:00:00:00:00",
+        ): None,
     })
     requirements = {'system': ["aircrack-ng/aireplay-ng"]}
     

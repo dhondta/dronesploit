@@ -85,6 +85,7 @@ class Toggle(Command):
                 if parts[1].strip() == name:
                     self.console._jobs.run("sudo rfkill unblock %s" % parts[0])
         self.console.root.interfaces  # this refreshes the state with INTERFACES
+        Entity.check()
     
     def validate(self, interface):
         if interface not in self.console.root.interfaces:
