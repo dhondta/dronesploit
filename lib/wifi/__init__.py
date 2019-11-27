@@ -1,42 +1,25 @@
 # -*- coding: UTF-8 -*-
-import re
 from time import time
 from sploitkit import Config, Module, Option, Path
 
-
-__all__ = ["drone_filter", "re", "time", "Config", "Module", "Option", "Path",
-           "ScanMixin", "WifiModule", "WifiAttackModule", "DRONE_REGEX",
-           "STATION_REGEX", "TARGET_REGEX", "WPA_HANDSHAKE_REGEX"]
+from .regex import *
+from .wpa import *
 
 
-DRONE_REGEX = {
-    'C-me':           re.compile(r"C-me[_\-][0-9a-f]{5}"),
-    'Flitt':          re.compile(r"Flitt[_\-]\d{6}"),
-    'Parrot Bebop':   re.compile(r"Bebop\-[0-9A-F]{6}"),
-    'Parrot Bebop 2': re.compile(r"Bebop2\-[0-9A-F]{6}"),
-    'DJI Tello':      re.compile(r"TELLO\-[0-9A-F]{6}"),
-}
-IW_REGEX = re.compile(r"(?m)(?P<name>[a-z][a-z0-9]*)\s+"
-                      r"IEEE\s(?P<techno>[a-zA-Z0-9\.])\s+"
-                      r"Mode\:\s*(?P<mode>[A-Z][a-z]+)\s+")
-STATION_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
-                           r"(?P<station>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+")
-TARGET_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
-                          r"(?P<power>\-?\d+)\s+"
-                          r"(?P<beacons>\d+)\s+"
-                          r"(?P<data>\d+)\s+"
-                          r"(?P<prate>\d+)\s+"
-                          r"(?P<channel>\d+)\s+"
-                          r"(?P<mb>\w+)\s+"
-                          r"(?P<enc>\w+)\s+"
-                          r"(?P<cipher>\w+)\s+"
-                          r"(?P<auth>\w+)\s+"
-                          r"(?P<essid>[\w\-\.]+)\s*$")
-WPA_HANDSHAKE_REGEX = re.compile(r"WPA handshake\:\s+"
-                                 r"(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})")
+__all__ = [
+    "drone_filter", "time",
+    "Config", "Module", "Option", "Path",
+    "ScanMixin", "WifiModule", "WifiAttackModule", "WPAConnectMixin",
+    "DRONE_REGEX", "STATION_REGEX", "TARGET_REGEX", "WPA_HANDSHAKE_REGEX",
+]
 
 
-def drone_filter(essid):
+def drone_filter(essid, model=None):
+    regexes = DRONE_REGEX
+    if model is not None:
+        if model not in DRONE_REGEX.keys():
+            raise ValueError("Bad drone model")
+        regexes = {model: DRONE_REGEX[model]}
     for _, regex in DRONE_REGEX.items():
         if regex.match(essid):
             return True
