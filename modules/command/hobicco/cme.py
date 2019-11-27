@@ -51,8 +51,9 @@ class ChangeApSsid(CmeModule):
     })
     
     def run(self):
-        self._change_ap_creds(self.config.option("NEW_SSID").value,
-                              self.config.option("PASSWORD").value)
+        essid = self.config.option("TARGET").value
+        pswd = self.console.state['TARGETS'][essid]['password']
+        self._change_ap_creds(self.config.option("NEW_SSID").value, pswd)
 
 
 class GetSysInfo(CmeModule):

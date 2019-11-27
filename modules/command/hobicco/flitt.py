@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
 from sploitkit import *
 
-from lib.drones.hobbico import FlittModule
+from lib.drones.hobbico import FlittCommandModule
 
 
-class ChangeDatetime(FlittModule):
+class ChangeDatetime(FlittCommandModule):
     """ Change the datetime of the target Flitt. """
     config = Config({
         Option(
@@ -25,14 +25,14 @@ class ChangeDatetime(FlittModule):
                               self.config.get("DATETIME_FORMAT"))
 
 
-class ChangeApPassword(FlittModule):
+class ChangeApPassword(FlittCommandModule):
     """ Change the password of the target Flitt's AP. """
     config = Config({
         Option(
             'NEW_PASSWORD',
             "Target's new password",
             True,
-        ): "12345678",
+        ): None,
     })
     
     def run(self):
@@ -40,34 +40,35 @@ class ChangeApPassword(FlittModule):
                               self.config.option("NEW_PASSWORD").value, False)
 
 
-class ChangeApSsid(FlittModule):
+class ChangeApSsid(FlittCommandModule):
     """ Change the SSID of the target Flitt's AP. """
     config = Config({
         Option(
             'NEW_SSID',
             "Target's new SSID",
             True,
-        ): "FLITT-abcdef",
+        ): None,
     })
     
     def run(self):
+        essid = self.config.option("TARGET").value
         self._change_ap_creds(self.config.option("NEW_SSID").value,
-                              self.config.option("PASSWORD").value)
+                              self.console.state['TARGETS'][essid]['password'])
 
 
-class GetSysInfo(FlittModule):
+class GetSysInfo(FlittCommandModule):
     """ Get system information from the target Flitt. """
     def run(self):
         print_formatted_text(self._get_sysinfo())
 
 
-class PowerOff(FlittModule):
+class PowerOff(FlittCommandModule):
     """ Power off the target Flitt. """
     def run(self):
         self._power_off()
 
 
-class StopVideo(FlittModule):
+class StopVideo(FlittCommandModule):
     """ Stop video recording of the target Flitt. """
     def run(self):
         self._stop_video()

@@ -55,7 +55,8 @@ class Wpa2pskCrack(WifiAttackModule):
     def run(self):
         t = self.console.state['TARGETS']
         self.logger.warning("Press Ctrl+C to interrupt")
-        _ = t[self.config.option('ESSID').value]
+        essid = self.config.option('ESSID').value
+        _ = t[essid]
         bssid, channel = _['bssid'], _['channel']
         deauth_int = self.config.option('DEAUTH_INTERVAL').value
         _ = [i for i, mon in self.console.state['INTERFACES'].items() if mon]
