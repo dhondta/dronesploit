@@ -4,6 +4,11 @@ from sploitkit.utils.dict import ExpiringDict
 from tinyscript import *
 
 
+def at_exit():
+    subprocess.call("service network-manager restart", shell=True)
+    subprocess.call("reset", shell=True)
+
+
 class DronesploitConsole(FrameworkConsole):
     sources = {
         'banners':   "./banners",
@@ -25,6 +30,10 @@ class DronesploitConsole(FrameworkConsole):
             if "no wireless extensions" not in i:
                 d[i.split()[0]] = "Mode:Monitor" in i
         return d.keys()
+    
+    @property
+    def man_interfaces(self):
+        return [i for i, mon in self.state['INTERFACES'].items() if not mon]
     
     @property
     def mon_interfaces(self):
