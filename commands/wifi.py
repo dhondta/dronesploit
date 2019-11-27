@@ -1,7 +1,41 @@
 # -*- coding: UTF-8 -*-
+from re import search
 from sploitkit import *
 
 from lib.wifi import *
+
+
+class Connect(Command, WPAConnectMixin):
+    """ Connect to an Access Point """
+    def complete_keys(self):
+        targets = self.console.state['TARGETS']
+        return [t for t in targets.keys() if targets[t].get('password')]
+    
+    def run(self, essid):
+        if WPAConnectMixin.run(self, essid):
+            self.logger.success("Connected to {}".format(essid))
+        else:
+            self.logger.failure("Connection to {} failed".format(essid))
+
+
+class Password(Command):
+    """ Manually set the password of an Access Point """
+    def complete_keys(self):
+        targets = self.console.state['TARGETS']
+        return [t for t in targets.keys() if 'password' in targets[t]]
+    
+    def complete_values(self, target=None):
+        targets = self.console.state['TARGETS']
+        return [t['password'] for _, t in targets.items() if t['password']]
+    
+    def run(self, essid, password):
+        self.console.state['TARGETS'][essid]['password'] = password
+        self.logger.success("TARGETS[{}][password] => {}"
+                            .format(essid, password))
+    
+    def validate(self, essid, password):
+        if essid not in self.complete_keys():
+            raise ValueError("invalid target")
 
 
 class Scan(Command, ScanMixin):
@@ -68,7 +102,7 @@ class Toggle(Command):
             new, name = None, None
             for line in out.split("\n"):
                 if "monitor mode" in line:
-                    _ = re.search(r"\[([a-z]+\d+)\](\w+)", line)
+                    _ = search(r"\[([a-z]+\d+)\](\w+)", line)
                     if _ is not None:
                         name, new = _.group(1), _.group(2)
                     break
@@ -76,7 +110,8 @@ class Toggle(Command):
                 self.logger.error("Could not set {} to monitor mode".format(i))
                 return
             after = set(self.console.root.interfaces)
-            new = list(after - before)[0]
+            new = list(after - before)[0]  #FIXME: empty list when problem with
+                                           #        interface half-set
             self.logger.info("{} set to monitor mode on {}".format(i, new))
             # ensure the interface is not soft-blocked
             out, _ = self.console._jobs.run("sudo rfkill list")
