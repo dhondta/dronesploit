@@ -59,7 +59,9 @@ class ChangeApSsid(CmeModule):
 class GetSysInfo(CmeModule):
     """ Get system information from the target C-me. """
     def run(self):
-        print_formatted_text(self._get_sysinfo())
+        r = self._get_sysinfo()
+        if r is not None:
+            print_formatted_text(r)
 
 
 class PowerOff(CmeModule):
