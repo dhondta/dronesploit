@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import time
+import yaml
 from datetime import datetime
 from sploitkit import *
 
@@ -37,7 +38,9 @@ class HobbicoModule(DroneModule):
     def _get_sysinfo(self):
         self.logger.info("Requesting system information...")
         self._feedback(self.send_command(0, -1), "System info not retrieved")
-        return self._last_cmd_resp
+        r = (self._last_cmd_resp or {}).get('PARAM')
+        if r:
+            return yaml.dump(r)
     
     def _power_off(self):
         self.logger.info("Shutting down the target...")
@@ -66,9 +69,11 @@ class CmeModule(HobbicoModule):
             "Target's SSID",
             True,
             choices=lambda o: [e for e in o.state['TARGETS'].keys() \
-                               if drone_filter(e, "Hobbico C-me")],
+                               if drone_filter(e, o.module.drone) and \
+                               o.state['TARGETS'][e]['connected']],
         ): None,
     })
+    drone = "Hobbico C-me"
     path = "command/hobbico/cme"
     
 
@@ -124,9 +129,11 @@ class FlittModule(HobbicoModule):
             "Target's SSID",
             True,
             choices=lambda o: [e for e in o.state['TARGETS'].keys() \
-                               if drone_filter(e, "Hobbico Flitt")],
+                               if drone_filter(e, o.module.drone) and \
+                               o.state['TARGETS'][e]['connected']],
         ): None,
     })
+    drone = "Hobbico Flitt"
     path = "exploit/hobbico/flitt"
 
 
