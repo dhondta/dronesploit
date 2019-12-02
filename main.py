@@ -19,6 +19,7 @@ class DronesploitConsole(FrameworkConsole):
     def __init__(self, *args, **kwargs):
         self.interfaces
         self.state['TARGETS'] = ExpiringDict(max_age=300)
+        self.state['STATIONS'] = ExpiringDict(max_age=300)
         super(DronesploitConsole, self).__init__(*args, **kwargs)
     
     @property
