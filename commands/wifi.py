@@ -1,19 +1,22 @@
 # -*- coding: UTF-8 -*-
-from re import search
+from prompt_toolkit.formatted_text import ANSI
 from sploitkit import *
+from termcolor import colored
 
 from lib.wifi import *
 
 
 class Connect(Command, WPAConnectMixin):
     """ Connect to an Access Point """
-    def complete_keys(self):
+    def complete_values(self):
         targets = self.console.state['TARGETS']
-        return [t for t in targets.keys() if targets[t].get('password')]
+        return [t for t, d in targets.items() if d.get('password') is not None]
     
     def run(self, essid):
         if WPAConnectMixin.run(self, essid):
             self.logger.success("Connected to {}".format(essid))
+            for t, d in self.console.state['TARGETS'].items():
+                d['connected'] = t == essid
         else:
             self.logger.failure("Connection to {} failed".format(essid))
 
@@ -30,8 +33,7 @@ class Password(Command):
     
     def run(self, essid, password):
         self.console.state['TARGETS'][essid]['password'] = password
-        self.logger.success("TARGETS[{}][password] => {}"
-                            .format(essid, password))
+        self.logger.success("({}) password => {}".format(essid, password))
     
     def validate(self, essid, password):
         if essid not in self.complete_keys():
@@ -53,26 +55,40 @@ class Scan(Command, ScanMixin):
     
     def validate(self, interface, timeout=300):
         if interface not in self.console.root.interfaces:
-            raise ValueError("Bad wireless interface")
+            raise ValueError("bad wireless interface")
         if not self.console.state['INTERFACES'][interface]:
-            raise ValueError("Wireless interface not in monitor mode")
+            raise ValueError("wireless interface not in monitor mode")
         if int(timeout) <= 0:
-            raise ValueError("Must be greater than 0")
+            raise ValueError("must be greater than 0")
 
 
 class Targets(Command):
     """ Display the list of currently known targets """
     def run(self):
         data = [["ESSID", "BSSID", "Channel", "Power", "Enc", "Cipher", "Auth",
-                 "Password"]]
-        for target in self.console.state['TARGETS'].items():
-            row = []
-            for h in data[0]:
-                row.append(target[h.lower()])
-            data.append(row)
+                 "Password", "Stations"]]
+        for _, target in self.console.state['TARGETS'].items():
+            c = target['connected']
+            rows = []
+            for i, h in enumerate(data[0]):
+                rows.append([""] * len(data[0]))
+                v = target[h.lower()]
+                if isinstance(v, (tuple, list)):
+                    for j in range(len(v) - 1):
+                        rows.append([""] * len(data[0]))
+                else:
+                    v = [v]
+                for j, sv in enumerate(v):
+                    if c:
+                        sv = colored(sv, attrs=['bold'])
+                    rows[j][i] = sv
+            for r in rows:
+                if all(v == "" for v in r):
+                    continue
+                data.append(r)
         if len(data) > 1:
             t = BorderlessTable(data, "Available Targets")
-            print_formatted_text(t.table)
+            print_formatted_text(ANSI(t.table))
         else:
             self.logger.warning("No target available yet")
 
@@ -102,9 +118,9 @@ class Toggle(Command):
             new, name = None, None
             for line in out.split("\n"):
                 if "monitor mode" in line:
-                    _ = search(r"\[([a-z]+\d+)\](\w+)", line)
-                    if _ is not None:
-                        name, new = _.group(1), _.group(2)
+                    m = re.search(r"\[([a-z]+\d+)\](\w+)", line)
+                    if m is not None:
+                        name, new = m.group(1), m.group(2)
                     break
             if new is None:
                 self.logger.error("Could not set {} to monitor mode".format(i))
@@ -124,4 +140,4 @@ class Toggle(Command):
     
     def validate(self, interface):
         if interface not in self.console.root.interfaces:
-            raise ValueError("Bad wireless interface")
+            raise ValueError("bad wireless interface")
