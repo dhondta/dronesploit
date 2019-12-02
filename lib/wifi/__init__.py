@@ -2,57 +2,18 @@
 from time import time
 from sploitkit import Config, Module, Option, Path
 
-from .regex import *
-from .wpa import *
+from .drone import *
+from .mixin import *
 
 
 __all__ = [
+    "re",
     "drone_filter", "time",
     "Config", "Module", "Option", "Path",
-    "ScanMixin", "WifiModule", "WifiAttackModule", "WPAConnectMixin",
-    "DRONE_REGEX", "STATION_REGEX", "TARGET_REGEX", "WPA_HANDSHAKE_REGEX",
+    "DeauthMixin", "ScanMixin", "WPAConnectMixin",
+    "WifiModule", "WifiAttackModule",
+    "STATION_REGEX",
 ]
-
-
-def drone_filter(essid, model=None):
-    regexes = DRONE_REGEX
-    if model is not None:
-        if model not in DRONE_REGEX.keys():
-            raise ValueError("Bad drone model")
-        regexes = {model: DRONE_REGEX[model]}
-    for _, regex in DRONE_REGEX.items():
-        if regex.match(essid):
-            return True
-    return False
-
-
-class ScanMixin(object):
-    """ Mixin class for use with Command and Module """
-    def run(self, interface, timeout=300):
-        self.logger.warning("Press Ctrl+C to interrupt")
-        t = self.console.state['TARGETS']
-        t.unlock()
-        cmd = "sudo airodump-ng {}".format(interface)
-        try:
-            for line in self.console._jobs.run_iter(cmd, timeout=int(timeout)):
-                _ = TARGET_REGEX.search(line)
-                if _ is None:
-                    continue
-                data = {}
-                for k in ["essid", "bssid", "channel", "power", "enc", "cipher",
-                          "auth"]:
-                    v = _.group(k)
-                    data[k] = int(v) if v.isdigit() else v
-                data['password'] = None
-                e = data['essid']
-                if self._filter_func(e):
-                    if e not in t.keys():
-                        self.logger.info("Found {}".format(e))
-                    else:
-                        data['password'] = t[e].get('password')
-                    t[e] = data
-        finally:
-            t.lock()
 
 
 class WifiModule(Module):
@@ -62,11 +23,17 @@ class WifiModule(Module):
             'INTERFACE',
             "WiFi interface in monitor mode",
             True,
-            choices=lambda o: o.config.console.root.mon_interfaces,
+            choices=lambda o: o.root.mon_interfaces,
         ): None,
     })
     path = "auxiliary/wifi"
-    requirements = {'system': ["wireless-tools/iwconfig"]}
+    requirements = {'state': {"INTERFACES": {None: True}},
+                    'system': ["wireless-tools/iwconfig"]}
+    requirements_messages = {
+        'state': {
+            'INTERFACES': "At least one interface in monitor mode is required",
+        }
+    }
     
     def preload(self):
         return self.prerun()
@@ -86,7 +53,7 @@ class WifiAttackModule(WifiModule):
             'ESSID',
             "Target AP's ESSID",
             True,
-            choices=lambda o: o.config.console.state['TARGETS'].keys()
+            choices=lambda o: o.state['TARGETS'].keys()
         ): None,
     })
     
