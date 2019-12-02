@@ -18,7 +18,6 @@ class SniffModule(WifiModule, ScanMixin):
         ): 300,
     })
     path = "auxiliary/wifi"
-    requirements = {'state': {"INTERFACES": {None: True}}}
     
     def run(self, filter_func=lambda *a, **kw: True):
         self._filter_func = filter_func
