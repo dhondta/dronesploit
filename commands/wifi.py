@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+import yaml
+from collections.abc import Iterable
 from prompt_toolkit.formatted_text import ANSI
 from sploitkit import *
 from termcolor import colored
@@ -6,19 +8,33 @@ from termcolor import colored
 from lib.wifi import *
 
 
-class Connect(Command, WPAConnectMixin):
+class Connect(Command, WifiConnectMixin):
     """ Connect to an Access Point """
     def complete_values(self):
         targets = self.console.state['TARGETS']
-        return [t for t, d in targets.items() if d.get('password') is not None]
+        return [t for t, d in targets.items() if d.get('password') is not None \
+                and t not in self.console.root.connected_targets]
     
     def run(self, essid):
-        if WPAConnectMixin.run(self, essid):
-            self.logger.success("Connected to {}".format(essid))
-            for t, d in self.console.state['TARGETS'].items():
-                d['connected'] = t == essid
+        i = WifiConnectMixin.connect(self, essid)
+        if i is not None:
+            self.logger.success("Connected to '{}' on {}".format(essid, i))
+            self.console.state['INTERFACES'][i][1] = essid
         else:
             self.logger.failure("Connection to {} failed".format(essid))
+
+
+class Disconnect(Command, WifiConnectMixin):
+    """ Disconnect from an Access Point """
+    def complete_values(self):
+        return self.console.root.connected_targets
+    
+    def run(self, essid=None):
+        for e, ok in WifiConnectMixin.disconnect(self, essid):
+            if ok:
+                self.logger.success("Disconnected from {}".format(e))
+            else:
+                self.logger.failure("Failed to disconnect from {}".format(e))
 
 
 class Password(Command):
@@ -28,11 +44,11 @@ class Password(Command):
         return [t for t in targets.keys() if 'password' in targets[t]]
     
     def complete_values(self, target=None):
-        targets = self.console.state['TARGETS']
-        return [t['password'] for _, t in targets.items() if t['password']]
+        return set(self.console.state['PASSWORDS'].values())
     
     def run(self, essid, password):
         self.console.state['TARGETS'][essid]['password'] = password
+        self.console.state['PASSWORDS'][essid] = password
         self.logger.success("({}) password => {}".format(essid, password))
     
     def validate(self, essid, password):
@@ -48,10 +64,10 @@ class Scan(Command, ScanMixin):
     
     def complete_keys(self):
         self.console.root.interfaces  # this triggers a refresh for INTERFACES
-        return [i for i, mon in self.console.state['INTERFACES'].items() if mon]
+        return [i for i, m in self.console.state['INTERFACES'].items() if m[0]]
     
     def run(self, interface, timeout=300):
-        ScanMixin.run(self, interface, timeout)
+        ScanMixin.scan(self, interface, timeout)
     
     def validate(self, interface, timeout=300):
         if interface not in self.console.root.interfaces:
@@ -62,13 +78,37 @@ class Scan(Command, ScanMixin):
             raise ValueError("must be greater than 0")
 
 
+class State(Command):
+    """ Display console's shared state """
+    requirements = {'config': {'DEBUG': True}}
+
+    def run(self):
+        self.console.root.interfaces
+        for k, v in self.console.state.items():
+            print_formatted_text("\n{}:".format(k))
+            v = v or ""
+            if len(v) == 0:
+                continue
+            if isinstance(v, Iterable):
+                if isinstance(v, dict):
+                    v = dict(**v)
+                for l in yaml.dump(v).split("\n"):
+                    if len(l.strip()) == 0:
+                        continue
+                    print_formatted_text("  " + l)
+            else:
+                print_formatted_text(v)
+        print_formatted_text("")
+
+
 class Targets(Command):
     """ Display the list of currently known targets """
     def run(self):
         data = [["ESSID", "BSSID", "Channel", "Power", "Enc", "Cipher", "Auth",
                  "Password", "Stations"]]
-        for _, target in self.console.state['TARGETS'].items():
-            c = target['connected']
+        for essid, target in self.console.state['TARGETS'].items():
+            i = self.console.state['INTERFACES']
+            c = any(x[1] == essid for x in i.values())
             rows = []
             for i, h in enumerate(data[0]):
                 rows.append([""] * len(data[0]))
@@ -102,7 +142,7 @@ class Toggle(Command):
     
     def run(self, interface):
         i = interface
-        if self.console.state['INTERFACES'][i]:
+        if self.console.state['INTERFACES'][i][0]:
             # turn off monitor mode
             self.console._jobs.run("sudo airmon-ng stop {}".format(i))
             self.logger.info("{} set back to managed mode".format(i))
