@@ -10,7 +10,7 @@ __all__ = [
     "re",
     "drone_filter", "time",
     "Config", "Module", "Option", "Path",
-    "DeauthMixin", "ScanMixin", "WPAConnectMixin",
+    "DeauthMixin", "ScanMixin", "WifiConnectMixin",
     "WifiModule", "WifiAttackModule",
     "STATION_REGEX",
 ]
@@ -27,7 +27,7 @@ class WifiModule(Module):
         ): None,
     })
     path = "auxiliary/wifi"
-    requirements = {'state': {"INTERFACES": {None: True}},
+    requirements = {'state': {"INTERFACES": {None: [True, None, None]}},
                     'system': ["wireless-tools/iwconfig"]}
     requirements_messages = {
         'state': {

@@ -44,24 +44,31 @@ class DroneModule(Module, DeauthMixin):
             self.logger.debug("Send: " + payload)
             s.send(payload.encode())
             r = s.recv(1024).strip(b" \x00").decode()
-            r = ast.literal_eval(r) if len(r) > 0 else {}
-            success = r.get('RESULT') == 0
             self.logger.debug("Recv: {}".format(r or "empty response"))
-            if not success:
-                self.logger.failure("Command failed")
-            self._last_cmd_resp = r
-            return success
+            if len(r) > 0:
+                self._last_cmd_resp = r = ast.literal_eval(r)
+                success = r.get('RESULT') == 0
+                if not success:
+                    self.logger.failure("Command failed")
+                return success
+            else:
+                self._last_cmd_resp = {}
+                raise ConnectionResetError("Empty response")
+        except ConnectionResetError:
+            kwargs['retry'] = kwargs.get('retry', 5)
+            kwargs['deauth'] = kwargs.get('deauth', 3)
         except Exception as e:
             self.logger.failure("Command failed ({})".format(e))
-            self.logger.exception(e)
         finally:
             s.close()
-        if kwargs.get('retry', True):
-            kwargs['retry'] = False
-            essid = self.config.option('TARGET').value
-            t = self.console.state['TARGETS'][essid]
-            bssid = t['bssid']
-            for sta in t['stations']:
-                self.deauth(bssid, sta)
-                sleep(1)
+        if kwargs.get('retry', 0) > 0:
+            if kwargs.get('deauth', 0) > 0:
+                essid = self.config.option('TARGET').value
+                t = self.console.state['TARGETS'][essid]
+                bssid = t['bssid']
+                for sta in t['stations']:
+                    self.deauth(bssid, sta, 5, .5, 2, silent=True)
+            sleep(.1)
+            kwargs['retry'] -= 1
+            kwargs['deauth'] -= 1
             return self.send_command(*args, **kwargs)

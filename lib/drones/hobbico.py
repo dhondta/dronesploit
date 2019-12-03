@@ -70,7 +70,7 @@ class CmeModule(HobbicoModule):
             True,
             choices=lambda o: [e for e in o.state['TARGETS'].keys() \
                                if drone_filter(e, o.module.drone) and \
-                               o.state['TARGETS'][e]['connected']],
+                               e in o.console.root.connected_targets],
         ): None,
     })
     drone = "Hobbico C-me"
@@ -130,7 +130,7 @@ class FlittModule(HobbicoModule):
             True,
             choices=lambda o: [e for e in o.state['TARGETS'].keys() \
                                if drone_filter(e, o.module.drone) and \
-                               o.state['TARGETS'][e]['connected']],
+                               e in o.console.root.connected_targets],
         ): None,
     })
     drone = "Hobbico Flitt"
