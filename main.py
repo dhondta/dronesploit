@@ -1,44 +1,11 @@
-#!/usr/bin/python3
-from sploitkit import FrameworkConsole
-from sploitkit.utils.dict import ExpiringDict
 from tinyscript import *
+
+from lib import DronesploitConsole
 
 
 def at_exit():
     subprocess.call("service network-manager restart", shell=True)
     subprocess.call("reset", shell=True)
-
-
-class DronesploitConsole(FrameworkConsole):
-    sources = {
-        'banners':   "./banners",
-        'libraries': "./lib",
-    }
-    exclude = ["root/test", "root/help"]
-    
-    def __init__(self, *args, **kwargs):
-        self.interfaces
-        self.state['TARGETS'] = ExpiringDict(max_age=300)
-        self.state['STATIONS'] = ExpiringDict(max_age=300)
-        super(DronesploitConsole, self).__init__(*args, **kwargs)
-    
-    @property
-    def interfaces(self):
-        d = self.state['INTERFACES'] = {}
-        out = self._jobs.run("iwconfig", no_debug=True)[0]
-        ifaces = re.split(r"\n\s*\n", out)
-        for i in ifaces:
-            if "no wireless extensions" not in i:
-                d[i.split()[0]] = "Mode:Monitor" in i
-        return d.keys()
-    
-    @property
-    def man_interfaces(self):
-        return [i for i, mon in self.state['INTERFACES'].items() if not mon]
-    
-    @property
-    def mon_interfaces(self):
-        return [i for i, mon in self.state['INTERFACES'].items() if mon]
 
 
 if __name__ == '__main__':
