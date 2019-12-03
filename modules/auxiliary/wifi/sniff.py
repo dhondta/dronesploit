@@ -21,8 +21,8 @@ class SniffModule(WifiModule, ScanMixin):
     
     def run(self, filter_func=lambda *a, **kw: True):
         self._filter_func = filter_func
-        ScanMixin.run(self, self.config.option('INTERFACE').value,
-                            self.config.option('TIMEOUT').value)
+        ScanMixin.scan(self, self.config.option('INTERFACE').value,
+                             self.config.option('TIMEOUT').value)
         delattr(self, "_filter_func")
 
 

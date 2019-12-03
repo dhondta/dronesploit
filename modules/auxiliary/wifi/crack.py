@@ -90,5 +90,6 @@ class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
                 password = line.split("[ ", 1)[1].split(" ]", 1)[0]
                 self.logger.success("Password found: {}".format(password))
                 self.console.state['TARGETS'][essid]['password'] = password
+                self.console.state['PASSWORDS'][essid] = password
                 return
         self.logger.failure("Password could not be found")
