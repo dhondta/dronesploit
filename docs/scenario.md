@@ -2,6 +2,6 @@ Here are a few available scenarios that can be applied with DroneSploit :
 
 **Brand** | **Model** | **Effect**
 --- | --- | ---
-Hobbico | Flitt Selfie Cam | Shutting down the drone
-Hobbico | C-Me Selfie Drone | Planting a Telnet backdoor
+Hobbico | C-Me Selfie Drone | Changing the SSID
+Hobbico | Flitt Selfie Cam | Powering off the drone
 DJI | Tello Drone | 
