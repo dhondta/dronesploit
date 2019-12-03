@@ -2,7 +2,7 @@ site_name: "DroneSploit - A Metasploit-like console for hacking drones"
 repo_url: https://github.com/dhondta/dronesploit
 site_author: dhondta
 docs_dir: docs
-nav:
+pages:
   - Introduction: index.md
   - 'Quick Start': quickstart.md
   - Scenarios: scenarios.md
