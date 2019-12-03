@@ -5,11 +5,11 @@ docs_dir: docs
 pages:
   - Introduction: index.md
   - 'Quick Start': quickstart.md
-  - Scenarios: scenarios.md
+  - Scenarios: scenario.md
   - Scenarios:
-    - 'Hobbico C-me': hobbico-cme.md
-    - 'Hobbico Flitt': hobbico-flitt.md
-    - 'DJI Tello': dji-tello.md
+    - 'Hobbico C-me - Changing SSID': scenarios/hobbico-cme.md
+    - 'Hobbico Flitt - Power Off': scenarios/hobbico-flitt.md
+    - 'DJI Tello - Landing': scenarios/dji-tello.md
 extra:
   mailto: alexandre.dhondt@gmail.com
 theme: readthedocs
