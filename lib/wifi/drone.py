@@ -24,6 +24,6 @@ def drone_filter(essid, model=None):
             raise ValueError("Bad drone model")
         regexes = {model: DRONE_REGEX[model]}
     for _, regex in regexes.items():
-        if regex.match(essid):
+        if regex.match(str(essid)):
             return True
     return False

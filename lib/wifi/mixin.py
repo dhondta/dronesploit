@@ -18,11 +18,11 @@ TARGET_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
                           r"(?P<data>\d+)\s+"
                           r"(?P<prate>\d+)\s+"
                           r"(?P<channel>\d+)\s+"
-                          r"(?P<mb>\w+)\s+"
+                          r"(?P<mb>\w+\.?)\s+"
                           r"(?P<enc>\w+)\s+"
-                          r"(?P<cipher>\w+)\s+"
-                          r"(?P<auth>\w+)\s+"
-                          r"(?P<essid>[\w\-\.]+)\s*$")
+                          r"(?P<cipher>\w*?)\s+"
+                          r"(?P<auth>\w*?)\s+"
+                          r"(?P<essid>[\w\-\.]+(?:\s+[\w\-\.]+)*)\s*$")
 
 
 class DeauthMixin(object):
@@ -100,7 +100,11 @@ class ScanMixin(object):
                     for k in ["essid", "bssid", "channel", "power", "enc",
                               "cipher", "auth"]:
                         v = m.group(k)
-                        data[k] = int(v) if v.isdigit() else v
+                        data[k] = int(v) if v.isdigit() and k != "essid" else v
+                    if data['enc'] == "OPN":
+                        data['essid'] = line.split("OPN")[1].strip()
+                        data['cipher'] = ""
+                        data['auth'] = ""
                     e = data['essid']
                     data['password'] = p.get(e)
                     data['stations'] = []
@@ -113,6 +117,7 @@ class ScanMixin(object):
                             for k in ['password', 'stations']:
                                 data[k] = t[e].get(k)
                         t[e] = data
+                    continue
                 # parse client-related line for its MAC address
                 m = STATION_REGEX.search(line)
                 if m is not None:
@@ -133,6 +138,8 @@ class ScanMixin(object):
                             self.logger.info("Found {} connected to {}"
                                              .format(sta, e))
                         s[sta] = e
+        except Exception as err:
+            self.logger.exception(err)
         finally:
             s.lock()
             t.lock()
@@ -143,19 +150,25 @@ class WifiConnectMixin(object):
     requirements = {'system': ["nmcli"]}
 
     def connect(self, essid, retry=True):
-        password = self.console.state['TARGETS'][essid]['password']
-        out = self.console._jobs.run(["nmcli", "device", "wifi", "connect",
-                                      essid, "password", password])[0]
-        if "Error: NetworkManager is not running." in out:
+        pswd = self.console.state['TARGETS'][essid].get('password')
+        cmd = ["nmcli", "device", "wifi", "connect", essid]
+        if pswd is not None:
+            cmd += ["password", pswd]
+        out = self.console._jobs.run(cmd)[0]
+        if "No network with SSID" in out:
+            self.logger.warning("No network with this SSID is running")
+            raise Exception("No network with SSID '{}'".format(essid))
+        elif "Error: NetworkManager is not running." in out:
             if retry:
-                self.restart_network_manager()
+                self.disconnect()
+                self.console._jobs.run("service network-manager restart")
                 return self.connect(essid, False)
             else:
                 raise Exception("Network Manager is not running")
         m = CONNECT_REGEX.search(out)
         if m is not None:
             iface = m.group("iface")
-            self.console._jobs.run(["dhclient", iface])
+            self.console._jobs.run("dhclient " + iface + " &", shell=True)
             return iface
         
     def disconnect(self, essid=None):
@@ -166,6 +179,3 @@ class WifiConnectMixin(object):
                                           "iface", iface])[0]
             yield essid, "successfully disconnected." in out
         self.console.root.interfaces
-    
-    def restart_network_manager(self):
-        self.console._jobs.run("service network-manager restart")

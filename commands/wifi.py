@@ -12,7 +12,8 @@ class Connect(Command, WifiConnectMixin):
     """ Connect to an Access Point """
     def complete_values(self):
         targets = self.console.state['TARGETS']
-        return [t for t, d in targets.items() if d.get('password') is not None \
+        return [t for t, d in targets.items() \
+                if (d.get('password') is not None or d['enc'] == "OPN") \
                 and t not in self.console.root.connected_targets]
     
     def run(self, essid):
@@ -44,7 +45,7 @@ class Password(Command):
         return [t for t in targets.keys() if 'password' in targets[t]]
     
     def complete_values(self, target=None):
-        return set(self.console.state['PASSWORDS'].values())
+        return self.console.state['PASSWORDS'].values()
     
     def run(self, essid, password):
         self.console.state['TARGETS'][essid]['password'] = password
@@ -104,9 +105,11 @@ class State(Command):
 class Targets(Command):
     """ Display the list of currently known targets """
     def run(self):
+        self.console.root.interfaces
         data = [["ESSID", "BSSID", "Channel", "Power", "Enc", "Cipher", "Auth",
                  "Password", "Stations"]]
-        for essid, target in self.console.state['TARGETS'].items():
+        for essid, target in sorted(self.console.state['TARGETS'].items(),
+                                    key=lambda x: x[0]):
             i = self.console.state['INTERFACES']
             c = any(x[1] == essid for x in i.values())
             rows = []
@@ -175,6 +178,7 @@ class Toggle(Command):
                 parts = line.split(":", 2)
                 if parts[1].strip() == name:
                     self.console._jobs.run("sudo rfkill unblock %s" % parts[0])
+        self.console._jobs.run("service network-manager restart")
         self.console.root.interfaces  # this refreshes the state with INTERFACES
         Entity.check()
     
