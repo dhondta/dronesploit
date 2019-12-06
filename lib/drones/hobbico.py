@@ -20,12 +20,20 @@ class HobbicoModule(DroneModule):
     Email:   y.pasquazzo@hotmail.com
     Version: 1.0
     """
-    payload_format = '{"CMD" : %d, "PARAM" : %s}'
+    fly_params = {
+        'format': '{"CMD" : %d, "PARAM" : %s}',
+        'result': lambda r: r.get('RESULT') == 0,
+    }
     
     def _change_ap_creds(self, ssid, pswd, new_ssid=True):
-        self.logger.info("Changing %s..." % ["password", "SSID"][new_ssid])
+        i = ["password", "SSID"][new_ssid]
+        self.logger.info("Changing %s..." % i)
         r = self.send_command(68, {"phrase": pswd, "ssid": ssid})
-        self._feedback(r, "AP password not changed")
+        self._feedback(r, "AP %s not changed" % i)
+        if not new_ssid:
+            self.console.state['TARGETS'][ssid]['password'] = pswd
+        self.console.state['PASSWORDS'][ssid] = pswd
+        return r
     
     def _change_datetime(self, new_dt, dt_format):
         dt = datetime.strptime(new_dt, dt_format)

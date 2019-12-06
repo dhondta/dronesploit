@@ -2,6 +2,7 @@
 from sploitkit import *
 
 from lib.drones.hobbico import CmeModule
+from lib.wifi.mixin import WifiConnectMixin
 
 
 class ChangeDatetime(CmeModule):
@@ -40,7 +41,7 @@ class ChangeApPassword(CmeModule):
                               self.config.option("NEW_PASSWORD").value, False)
 
 
-class ChangeApSsid(CmeModule):
+class ChangeApSsid(CmeModule, WifiConnectMixin):
     """ Change the SSID of the target C-me's AP. """
     config = Config({
         Option(
@@ -52,8 +53,17 @@ class ChangeApSsid(CmeModule):
     
     def run(self):
         essid = self.config.option("TARGET").value
-        pswd = self.console.state['TARGETS'][essid]['password']
-        self._change_ap_creds(self.config.option("NEW_SSID").value, pswd)
+        new_essid = self.config.option("NEW_SSID").value
+        t = self.console.state['TARGETS']
+        pswd = t[essid]['password']
+        if self._change_ap_creds(new_essid, pswd):
+            t[new_essid] = {k: new_essid if k == "essid" else v \
+                            for k, v in t[essid].items()}
+            self.config['NEW_SSID'] = essid
+            del t[essid]
+            self.console.root.interfaces
+            self.config['TARGET'] = new_essid if self.connect(new_essid) \
+                                                 is not None else None
 
 
 class GetSysInfo(CmeModule):
