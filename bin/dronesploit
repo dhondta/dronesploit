@@ -1,12 +1,25 @@
 #!/usr/bin/python3
+import dronesploit
+from dronesploit.lib import DronesploitConsole as BaseConsole
 from tinyscript import *
 
-from src.lib import DronesploitConsole
+
+DAT = os.path.join(sys.prefix, "local", "dronesploit")
+PKG = os.path.dirname(dronesploit.__file__)
 
 
 def at_exit():
     subprocess.call("service network-manager restart", shell=True)
     subprocess.call("reset", shell=True)
+
+
+class DronesploitConsole(BaseConsole):
+    sources = {
+        'banners':   os.path.join(DAT, "banners"),
+        'entities':  [os.path.join(DAT, f) for f in \
+                      ["commands", "models", "modules"]],
+        'libraries': PKG,
+    }
 
 
 if __name__ == '__main__':

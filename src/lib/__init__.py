@@ -6,8 +6,9 @@ from sploitkit.utils.dict import ExpiringDict
 
 class DronesploitConsole(FrameworkConsole):
     sources = {
-        'banners':   "./banners",
-        'libraries': "./lib",
+        'banners':   "./src/banners",
+        'entities':  ["./src/commands", "./src/models", "./src/modules", ],
+        'libraries': "./src",
     }
     exclude = ["root/test", "root/help"]
     
