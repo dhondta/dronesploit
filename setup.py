@@ -10,6 +10,8 @@ with open("LICENSE", 'r') as f:
     license = f.read()
 with open("requirements.txt", 'r') as f:
     reqs = [r.strip() for r in f.readlines() if r.strip() != ""]
+with open("src/VERSION.txt", 'r') as f:
+    version = f.read().strip()
 
 
 os.rename("src", "dronesploit")
@@ -21,7 +23,7 @@ for folder in ["banners", "commands", "modules"]:
 
 setup(
     name="dronesploit",
-    version="1.0",
+    version=version,
     packages=find_packages(),
     scripts=["bin/dronesploit"],
     install_requires=reqs,
