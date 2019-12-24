@@ -11,7 +11,7 @@
 
 This CLI framework is based on [`sploitkit`](https://github.com/dhondta/sploitkit) and is an attempt to gather hacking techniques and exploits especially focused on **drone hacking**. For the ease of use, the interface has a layout that looks like Metasploit.
 
-[Black Hat Europe Arsenal 2019 presentation](https://github.com/dhondta/dronesploit/tree/master/docs/blackhat-eu19-arsenal.pdf)
+[Black Hat Europe Arsenal 2019 presentation](https://dhondta.github.io/dronesploit/docs/blackhat-eu19-arsenal.pdf)
 
 Also see: [Article on *The Daily Swig*](https://portswigger.net/daily-swig/black-hat-europe-new-tool-offers-metasploit-like-framework-for-hacking-into-drones)
 
@@ -19,12 +19,12 @@ Also see: [Article on *The Daily Swig*](https://portswigger.net/daily-swig/black
 
 ## Interface
 
-![DroneSploit](https://github.com/dhondta/dronesploit/tree/master/docs/img/dronesploit.png)
+![DroneSploit](https://dhondta.github.io/dronesploit/docs/img/dronesploit.png)
 
-![DroneSploit command examples](https://github.com/dhondta/dronesploit/tree/master/docs/img/dronesploit-commands.png)
+![DroneSploit command examples](https://dhondta.github.io/dronesploit/docs/img/dronesploit-commands.png)
 
 ## Modules
 
 This example shows an example of module for DroneSploit aimed to change the password or the SSID of a particular model of drone.
 
-![DroneSploit command examples](https://github.com/dhondta/dronesploit/tree/master/docs/img/dronesploit-module.png)
+![DroneSploit command examples](https://dhondta.github.io/dronesploit/docs/img/dronesploit-module.png)
