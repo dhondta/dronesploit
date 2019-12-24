@@ -15,6 +15,14 @@ This CLI framework is based on [`sploitkit`](https://github.com/dhondta/sploitki
 
 Also see: [Article on *The Daily Swig*](https://portswigger.net/daily-swig/black-hat-europe-new-tool-offers-metasploit-like-framework-for-hacking-into-drones)
 
+## Setup
+
+This project is available on [PyPi](https://pypi.python.org/pypi/dronesploit/) and can be simply installed using Pip:
+
+```sh
+pip3 install dronesploit
+```
+
 # Basics
 
 ## Interface
@@ -27,4 +35,4 @@ Also see: [Article on *The Daily Swig*](https://portswigger.net/daily-swig/black
 
 This example shows an example of module for DroneSploit aimed to change the password or the SSID of a particular model of drone.
 
-![DroneSploit command examples](https://dhondta.github.io/dronesploit/docs/img/dronesploit-module.png)
+![DroneSploit module example](https://dhondta.github.io/dronesploit/docs/img/dronesploit-module.png)
