@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from tinyscript import *
 
-from src.lib import DronesploitConsole
+from dronesploit.lib import DronesploitConsole
 
 
 def at_exit():
