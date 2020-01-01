@@ -21,7 +21,7 @@ setup(
     version=dronesploit.__version__,
     packages=find_packages(),
     scripts=["bin/dronesploit"],
-    install_requires=["sploitkit", "tinyscript"],
+    install_requires=["sploitkit", "tinyscript", "pygments>=2.5.2"],
     python_requires=">=3.6, <4",
     setup_requires=["setuptools"],
     data_files=datafiles,

@@ -6,9 +6,10 @@ from sploitkit.utils.dict import ExpiringDict
 
 class DronesploitConsole(FrameworkConsole):
     sources = {
-        'banners':   "./src/banners",
-        'entities':  ["./src/commands", "./src/models", "./src/modules", ],
-        'libraries': "./src",
+        'banners':   "./dronesploit/banners",
+        'entities':  ["./dronesploit/commands", "./dronesploit/models",
+                      "./dronesploit/modules"],
+        'libraries': "./dronesploit",
     }
     exclude = ["root/test", "root/help"]
     
@@ -30,8 +31,9 @@ class DronesploitConsole(FrameworkConsole):
     def interfaces(self):
         d = self.state['INTERFACES'] = {}
         out = self._jobs.run("iwconfig", no_debug=True)[0]
-        ifaces = re.split(r"\n\s*\n", out)
-        for i in ifaces:
+        for i in re.split(r"\n\s*\n", out):
+            if i == "":
+                continue
             iface = i.split()[0]
             if "no wireless extensions" not in i:
                 mon = "Mode:Monitor" in i
