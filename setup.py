@@ -18,7 +18,6 @@ for folder in ["banners", "commands", "modules"]:
                   for d, folders, files in os.walk(src)]
 
 setup(
-    version=dronesploit.__version__,
     packages=find_packages(),
     scripts=["bin/dronesploit"],
     install_requires=["sploitkit", "tinyscript", "pygments>=2.5.2"],
