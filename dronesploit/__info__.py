@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-"""Tinyscript package information.
+"""Dronesploit package information.
 
 """
 import os
