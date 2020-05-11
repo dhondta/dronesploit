@@ -9,7 +9,7 @@
 
 # DroneSploit
 
-This CLI framework is based on [`sploitkit`](https://github.com/dhondta/sploitkit) and is an attempt to gather hacking techniques and exploits especially focused on **drone hacking**. For the ease of use, the interface has a layout that looks like Metasploit.
+This CLI framework is based on [`sploitkit`](https://github.com/dhondta/python-sploitkit) and is an attempt to gather hacking techniques and exploits especially focused on **drone hacking**. For the ease of use, the interface has a layout that looks like Metasploit.
 
 [Black Hat Europe Arsenal 2019 presentation](https://dhondta.github.io/dronesploit/docs/blackhat-eu19-arsenal.pdf)
 
