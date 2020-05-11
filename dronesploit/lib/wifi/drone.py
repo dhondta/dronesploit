@@ -14,6 +14,7 @@ DRONE_REGEX = {
     'Parrot Bebop':   __regex_set(r"Bebop"),
     'Parrot Bebop 2': __regex_set(r"Bebop2"),
     'DJI Tello':      __regex_set(r"TELLO"),
+    'Maginon QC-50S': __regex_set(r"Maginon\sQC-50S\sWifi")
 }
 
 

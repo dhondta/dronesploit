@@ -22,7 +22,8 @@ TARGET_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
                           r"(?P<enc>\w+)\s+"
                           r"(?P<cipher>\w*?)\s+"
                           r"(?P<auth>\w*?)\s+"
-                          r"(?P<essid>[\w\-\.]+(?:\s+[\w\-\.]+)*)\s*$")
+                          r"(?P<essid>([\w\-?\.?]+\s)+[\w\-\.]+)")
+                          #r"(?P<essid>[\w\-\.]+(?:\s+[\w\-\.]+)*)\s*$")
 
 
 class DeauthMixin(object):
@@ -102,7 +103,8 @@ class ScanMixin(object):
                         v = m.group(k)
                         data[k] = int(v) if v.isdigit() and k != "essid" else v
                     if data['enc'] == "OPN":
-                        data['essid'] = line.split("OPN")[1].strip()
+                        #data['essid'] = line.split("OPN")[1].strip()
+                        data['essid'] = data["auth"] + " " + data["essid"]
                         data['cipher'] = ""
                         data['auth'] = ""
                     e = data['essid']
@@ -170,7 +172,7 @@ class WifiConnectMixin(object):
             iface = m.group("iface")
             self.console._jobs.run("dhclient " + iface + " &", shell=True)
             return iface
-        
+
     def disconnect(self, essid=None):
         for iface, data in self.console.state['INTERFACES'].items():
             if essid is not None and data[1] != essid:
