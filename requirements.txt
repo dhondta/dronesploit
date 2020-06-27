@@ -1,2 +1,4 @@
 sploitkit
 tinyscript
+
+pillow>=6.2.3 # not directly required, pinned by Snyk to avoid a vulnerability
