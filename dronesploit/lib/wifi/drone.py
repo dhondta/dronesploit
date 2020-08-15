@@ -9,11 +9,12 @@ __regex_set = lambda x: re.compile(x + r"[_\-][0-9a-zA-Z]{4,20}")
 
 
 DRONE_REGEX = {
-    'Hobbico C-me':   __regex_set(r"C-me"),
-    'Hobbico Flitt':  __regex_set(r"Flitt"),
-    'Parrot Bebop':   __regex_set(r"Bebop"),
-    'Parrot Bebop 2': __regex_set(r"Bebop2"),
-    'DJI Tello':      __regex_set(r"TELLO"),
+    'DJI Tello':        __regex_set(r"TELLO"),
+    'FPV Racing Drone': __regex_set(r"WIFI_FPV"),
+    'Hobbico C-me':     __regex_set(r"C-me"),
+    'Hobbico Flitt':    __regex_set(r"Flitt"),
+    'Parrot Bebop':     __regex_set(r"Bebop"),
+    'Parrot Bebop 2':   __regex_set(r"Bebop2"),
 }
 
 
