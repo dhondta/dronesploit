@@ -16,10 +16,8 @@ class ChangeApPassword(TelloModule):
     })
     
     def run(self):
-        #FIXME: this was copied from command/hobbico/cme ; to be adapted wrt
-        #        Tello's methods
-        self._change_ap_creds(self.config.option("TARGET").value,
-                              self.config.option("NEW_PASSWORD").value, False)
+        #FIXME: this was copied from command/hobbico/cme ; to be adapted wrt Tello's methods
+        self._change_ap_creds(self.config.option("TARGET").value, self.config.option("NEW_PASSWORD").value, False)
 
 
 class ChangeApSsid(TelloModule, WifiConnectMixin):
@@ -33,20 +31,17 @@ class ChangeApSsid(TelloModule, WifiConnectMixin):
     })
     
     def run(self):
-        #FIXME: this was copied from command/hobbico/cme ; to be adapted wrt
-        #        Tello's methods
+        #FIXME: this was copied from command/hobbico/cme ; to be adapted wrt Tello's methods
         essid = self.config.option("TARGET").value
         new_essid = self.config.option("NEW_SSID").value
         t = self.console.state['TARGETS']
         pswd = t[essid]['password']
         if self._change_ap_creds(new_essid, pswd):
-            t[new_essid] = {k: new_essid if k == "essid" else v \
-                            for k, v in t[essid].items()}
+            t[new_essid] = {k: new_essid if k == "essid" else v for k, v in t[essid].items()}
             self.config['NEW_SSID'] = essid
             del t[essid]
             self.console.root.interfaces
-            self.config['TARGET'] = new_essid if self.connect(new_essid) \
-                                                 is not None else None
+            self.config['TARGET'] = new_essid if self.connect(new_essid) is not None else None
 
 
 class EmergencyStop(TelloModule):
@@ -72,3 +67,4 @@ class Takeoff(TelloModule):
     """ Takeoff the target Tello. """
     def run(self):
         self._send_upd_command("takeoff")
+

@@ -13,11 +13,10 @@ __all__ = ["DJIModule"]
 
 
 class DJIModule(DroneModule):
-    """ Module proxy class for defining multiple common utility methods for
-         DJI drones.
+    """ Module proxy class for defining multiple common utility methods for DJI drones.
     
     Author:  Alexandre D'Hondt
-    Email:   alexandre@hotmail.com
+    Email:   alexandre.dhondt@gmail.com
     Version: 1.0
     """
     pass
@@ -40,8 +39,7 @@ class TelloModule(DJIModule):
             'TARGET',
             "Target's SSID",
             True,
-            choices=lambda o: [e for e in o.state['TARGETS'].keys() \
-                               if drone_filter(e, o.module.drone) and \
+            choices=lambda o: [e for e in o.state['TARGETS'].keys() if drone_filter(e, o.module.drone) and \
                                e in o.console.root.connected_targets],
         ): None,
     })
@@ -55,8 +53,7 @@ class TelloModule(DJIModule):
         },
         'post':   lambda s, t, p: s.sendto(b"command", t),
         'pre':    lambda s, t, p: s.sendto(b"command", t),
-        'result': lambda r: True if r.strip().lower() == b"ok" else \
-                            False if r.strip().lower() == b"unknown command!" \
+        'result': lambda r: True if r.strip().lower() == b"ok" else False if r.strip().lower() == b"unknown command!" \
                             else None,
         'socket': socket.SOCK_DGRAM,
     }
@@ -80,3 +77,4 @@ class TelloModule(DJIModule):
             self._feedback(r, msg[1])
             return r
         raise Exception("Bad UDP command")
+

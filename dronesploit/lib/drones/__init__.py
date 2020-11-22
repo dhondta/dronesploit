@@ -8,15 +8,13 @@ from lib.wifi import DeauthMixin
 
 
 class DroneModule(Module, DeauthMixin):
-    """ Generic Module proxy class for defining multiple common utility methods
-         for drones. """
+    """ Generic Module proxy class for defining multiple common utility methods for drones. """
     def preload(self):
         if 'TARGET' not in self.config.keys():
             raise NotImplementedError("DroneModule must have a TARGET option")
         targets = self.config.option('TARGET').choices
         if len(targets) == 0:
-            self.logger.warning("No {} target connected yet ; please use the "
-                                "'scan' and 'connect' commands"
+            self.logger.warning("No {} target connected yet ; please use the 'scan' and 'connect' commands"
                                 .format(self.drone))
             return False
         self.config['TARGET'] = targets[0]
@@ -42,8 +40,7 @@ class DroneModule(Module, DeauthMixin):
         except Exception as e:
             self.logger.error("Bad command payload format ({})".format(e))
             return False
-        target_addr = (self.config.option("IP").value,
-                       self.config.option("FLYCTL_PORT").value)
+        target_addr = (self.config.option("IP").value, self.config.option("FLYCTL_PORT").value)
         command_result = fly_params.get('result', lambda r: r)
         self._last_cmd_resp = None
         fly_params.get('pre', lambda *a: None)(s, target_addr, fly_params)
@@ -103,3 +100,4 @@ class DroneModule(Module, DeauthMixin):
                 s.close()
                 return success
         fly_params.get('post', lambda *a: None)(s, target_addr, fly_params)
+

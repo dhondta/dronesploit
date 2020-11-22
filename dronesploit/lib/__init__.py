@@ -7,8 +7,7 @@ from sploitkit.utils.dict import ExpiringDict
 class DronesploitConsole(FrameworkConsole):
     sources = {
         'banners':   "./dronesploit/banners",
-        'entities':  ["./dronesploit/commands", "./dronesploit/models",
-                      "./dronesploit/modules"],
+        'entities':  ["./dronesploit/commands", "./dronesploit/models", "./dronesploit/modules"],
         'libraries': "./dronesploit",
     }
     exclude = ["root/test", "root/help"]
@@ -24,8 +23,7 @@ class DronesploitConsole(FrameworkConsole):
     
     @property
     def connected_targets(self):
-        return [x[1] for x in self.state['INTERFACES'].values() \
-                if x[1] is not None]
+        return [x[1] for x in self.state['INTERFACES'].values() if x[1] is not None]
     
     @property
     def interfaces(self):
@@ -62,5 +60,5 @@ class DronesploitConsole(FrameworkConsole):
     
     @property
     def self_mac_addresses(self):
-        return [x[2] for x in self.state['INTERFACES'].values() \
-                if x[2] is not None]
+        return [x[2] for x in self.state['INTERFACES'].values() if x[2] is not None]
+

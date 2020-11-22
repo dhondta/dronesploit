@@ -28,3 +28,4 @@ def drone_filter(essid, model=None):
         if regex.match(str(essid)):
             return True
     return False
+

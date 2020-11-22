@@ -1,9 +1,8 @@
 # -*- coding: UTF-8 -*-
 import yaml
-from collections.abc import Iterable
 from prompt_toolkit.formatted_text import ANSI
 from sploitkit import *
-from termcolor import colored
+from tinyscript.helpers import colored, is_iterable
 
 from lib.wifi import *
 
@@ -12,9 +11,8 @@ class Connect(Command, WifiConnectMixin):
     """ Connect to an Access Point """
     def complete_values(self):
         targets = self.console.state['TARGETS']
-        return [t for t, d in targets.items() \
-                if (d.get('password') is not None or d['enc'] == "OPN") \
-                and t not in self.console.root.connected_targets]
+        return [t for t, d in targets.items() if (d.get('password') is not None or d['enc'] == "OPN") and \
+                t not in self.console.root.connected_targets]
     
     def run(self, essid):
         i = WifiConnectMixin.connect(self, essid)
@@ -90,7 +88,7 @@ class State(Command):
             v = v or ""
             if len(v) == 0:
                 continue
-            if isinstance(v, Iterable):
+            if is_iterable(v):
                 if isinstance(v, dict):
                     v = dict(**v)
                 for l in yaml.dump(v).split("\n"):
@@ -106,10 +104,8 @@ class Targets(Command):
     """ Display the list of currently known targets """
     def run(self):
         self.console.root.interfaces
-        data = [["ESSID", "BSSID", "Channel", "Power", "Enc", "Cipher", "Auth",
-                 "Password", "Stations"]]
-        for essid, target in sorted(self.console.state['TARGETS'].items(),
-                                    key=lambda x: x[0]):
+        data = [["ESSID", "BSSID", "Channel", "Power", "Enc", "Cipher", "Auth", "Password", "Stations"]]
+        for essid, target in sorted(self.console.state['TARGETS'].items(), key=lambda x: x[0]):
             i = self.console.state['INTERFACES']
             c = any(x[1] == essid for x in i.values())
             rows = []
@@ -156,8 +152,7 @@ class Toggle(Command):
             # kill processes using this interface
             self.console._jobs.run("sudo airmon-ng check kill")
             # turn on monitor mode ; this will rename the interface
-            out, err = self.console._jobs.run("sudo airmon-ng start {}"
-                                              .format(i), stdin="y\n")
+            out, err = self.console._jobs.run("sudo airmon-ng start {}".format(i), stdin="y\n")
             new, name = None, None
             for line in out.split("\n"):
                 if "monitor mode" in line:
@@ -169,8 +164,7 @@ class Toggle(Command):
                 self.logger.error("Could not set {} to monitor mode".format(i))
                 return
             after = set(self.console.root.interfaces)
-            new = list(after - before)[0]  #FIXME: empty list when problem with
-                                           #        interface half-set
+            new = list(after - before)[0]  #FIXME: empty list when problem with interface half-set
             self.logger.info("{} set to monitor mode on {}".format(i, new))
             # ensure the interface is not soft-blocked
             out, _ = self.console._jobs.run("sudo rfkill list")
@@ -185,3 +179,4 @@ class Toggle(Command):
     def validate(self, interface):
         if interface not in self.console.root.interfaces:
             raise ValueError("bad wireless interface")
+

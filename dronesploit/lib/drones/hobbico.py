@@ -8,13 +8,11 @@ from . import DroneModule
 from ..wifi import drone_filter
 
 
-__all__ = ["CmeModule", "CmeUpdateModule",
-           "FlittModule", "FlittCommandModule", "FlittTelnetModule"]
+__all__ = ["CmeModule", "CmeUpdateModule", "FlittModule", "FlittCommandModule", "FlittTelnetModule"]
 
 
 class HobbicoModule(DroneModule):
-    """ Module proxy class for defining multiple common utility methods for
-         Hobbico drones.
+    """ Module proxy class for defining multiple common utility methods for Hobbico drones.
     
     Author:  Yannick Pasquazzo
     Email:   y.pasquazzo@hotmail.com
@@ -38,8 +36,7 @@ class HobbicoModule(DroneModule):
     def _change_datetime(self, new_dt, dt_format):
         dt = datetime.strptime(new_dt, dt_format)
         self.logger.info("Changing datetime...")
-        r = self.send_command(29, {"YEAR": dt.year, "MONTH": dt.month,
-                                   "DAY": dt.day, "HOUR": dt.hour,
+        r = self.send_command(29, {"YEAR": dt.year, "MONTH": dt.month, "DAY": dt.day, "HOUR": dt.hour,
                                    "MINUTE": dt.minute, "SECOND": dt.second})
         self._feedback(r, "Datetime not changed")
     
@@ -76,8 +73,7 @@ class CmeModule(HobbicoModule):
             'TARGET',
             "Target's SSID",
             True,
-            choices=lambda o: [e for e in o.state['TARGETS'].keys() \
-                               if drone_filter(e, o.module.drone) and \
+            choices=lambda o: [e for e in o.state['TARGETS'].keys() if drone_filter(e, o.module.drone) and \
                                e in o.console.root.connected_targets],
         ): None,
     })
@@ -99,8 +95,7 @@ class CmeUpdateModule(CmeModule):
     def send_update(self, filename=None):
         from ftplib import FTP
         self.logger.info("Starting an FTP session...")
-        ftp = FTP(self.config.option("IP").value,
-                  self.config.option("FTP_PORT").value)
+        ftp = FTP(self.config.option("IP").value, self.config.option("FTP_PORT").value)
         self.logger.debug("Authenticating...")
         ftp.sendcmd("USER root")
         ftp.sendcmd("PASS *")
@@ -136,8 +131,7 @@ class FlittModule(HobbicoModule):
             'TARGET',
             "Target's SSID",
             True,
-            choices=lambda o: [e for e in o.state['TARGETS'].keys() \
-                               if drone_filter(e, o.module.drone) and \
+            choices=lambda o: [e for e in o.state['TARGETS'].keys() if drone_filter(e, o.module.drone) and \
                                e in o.console.root.connected_targets],
         ): None,
     })
@@ -195,3 +189,4 @@ class FlittTelnetModule(FlittModule):
             self.logger.failure("Bad Telnet password")
         t.close()
         return success
+

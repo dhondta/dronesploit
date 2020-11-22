@@ -22,8 +22,7 @@ class ChangeDatetime(CmeModule):
     })
     
     def run(self):
-        self._change_datetime(self.config.get("NEW_DATETIME"),
-                              self.config.get("DATETIME_FORMAT"))
+        self._change_datetime(self.config.get("NEW_DATETIME"), self.config.get("DATETIME_FORMAT"))
 
 
 class ChangeApPassword(CmeModule):
@@ -37,8 +36,7 @@ class ChangeApPassword(CmeModule):
     })
     
     def run(self):
-        self._change_ap_creds(self.config.option("TARGET").value,
-                              self.config.option("NEW_PASSWORD").value, False)
+        self._change_ap_creds(self.config.option("TARGET").value, self.config.option("NEW_PASSWORD").value, False)
 
 
 class ChangeApSsid(CmeModule, WifiConnectMixin):
@@ -57,13 +55,11 @@ class ChangeApSsid(CmeModule, WifiConnectMixin):
         t = self.console.state['TARGETS']
         pswd = t[essid]['password']
         if self._change_ap_creds(new_essid, pswd):
-            t[new_essid] = {k: new_essid if k == "essid" else v \
-                            for k, v in t[essid].items()}
+            t[new_essid] = {k: new_essid if k == "essid" else v for k, v in t[essid].items()}
             self.config['NEW_SSID'] = essid
             del t[essid]
             self.console.root.interfaces
-            self.config['TARGET'] = new_essid if self.connect(new_essid) \
-                                                 is not None else None
+            self.config['TARGET'] = new_essid if self.connect(new_essid) is not None else None
 
 
 class GetSysInfo(CmeModule):
@@ -84,3 +80,4 @@ class StopVideo(CmeModule):
     """ Stop video recording of the target C-me. """
     def run(self):
         self._stop_video()
+

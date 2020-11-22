@@ -21,8 +21,7 @@ class ChangeDatetime(FlittCommandModule):
     })
     
     def run(self):
-        self._change_datetime(self.config.get("NEW_DATETIME"),
-                              self.config.get("DATETIME_FORMAT"))
+        self._change_datetime(self.config.get("NEW_DATETIME"), self.config.get("DATETIME_FORMAT"))
 
 
 class ChangeApPassword(FlittCommandModule):
@@ -36,8 +35,7 @@ class ChangeApPassword(FlittCommandModule):
     })
     
     def run(self):
-        self._change_ap_creds(self.config.option("TARGET").value,
-                              self.config.option("NEW_PASSWORD").value, False)
+        self._change_ap_creds(self.config.option("TARGET").value, self.config.option("NEW_PASSWORD").value, False)
 
 
 class ChangeApSsid(FlittCommandModule):
@@ -52,8 +50,7 @@ class ChangeApSsid(FlittCommandModule):
     
     def run(self):
         essid = self.config.option("TARGET").value
-        self._change_ap_creds(self.config.option("NEW_SSID").value,
-                              self.console.state['TARGETS'][essid]['password'])
+        self._change_ap_creds(self.config.option("NEW_SSID").value, self.console.state['TARGETS'][essid]['password'])
 
 
 class GetSysInfo(FlittCommandModule):
@@ -74,3 +71,4 @@ class StopVideo(FlittCommandModule):
     """ Stop video recording of the target Flitt. """
     def run(self):
         self._stop_video()
+

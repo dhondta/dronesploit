@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from time import time
-from sploitkit import Config, Module, Option, Path
+from sploitkit import Config, Module, Option
+from tinyscript.helpers import Path
 
 from .drone import *
 from .mixin import *
@@ -27,21 +28,15 @@ class WifiModule(Module):
         ): None,
     })
     path = "auxiliary/wifi"
-    requirements = {'state': {"INTERFACES": {None: [True, None, None]}},
-                    'system': ["wireless-tools/iwconfig"]}
-    requirements_messages = {
-        'state': {
-            'INTERFACES': "At least one interface in monitor mode is required",
-        }
-    }
+    requirements = {'state': {"INTERFACES": {None: [True, None, None]}}, 'system': ["wireless-tools/iwconfig"]}
+    requirements_messages = { 'state': {'INTERFACES': "At least one interface in monitor mode is required"}}
     
     def preload(self):
         return self.prerun()
     
     def prerun(self):
         if len(self.console.root.mon_interfaces) == 0:
-            self.logger.warning("No interface in monitor mode defined ; please"
-                                " use the 'toggle' command")
+            self.logger.warning("No interface in monitor mode defined ; please use the 'toggle' command")
             return False
         self.config['INTERFACE'] = self.console.root.mon_interfaces[0]
 
@@ -60,10 +55,10 @@ class WifiAttackModule(WifiModule):
     def preload(self):
         if super(WifiAttackModule, self).preload() is False:
             return False
-        _ = self.console.state['TARGETS']
-        if len(_) == 0:
-            self.logger.warning("No target available yet ; please use the "
-                                "'scan' command")
+        t = self.console.state['TARGETS']
+        if len(t) == 0:
+            self.logger.warning("No target available yet ; please use the 'scan' command")
             return False
-        self.config['ESSID'] = v = _[list(_.keys())[0]]['essid']
+        self.config['ESSID'] = v = t[list(t.keys())[0]]['essid']
         self.logger.debug("ESSID => {}".format(v))
+
