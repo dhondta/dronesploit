@@ -1,3 +1,1 @@
-pillow>=6.2.3
-sploitkit
-tinyscript>=1.22.4
+sploitkit>=0.3.5
