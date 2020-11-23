@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import re
 from sploitkit import FrameworkConsole
-from sploitkit.utils.dict import ExpiringDict
+from tinyscript.helpers import is_bool, ExpiringDict
 
 
 class DronesploitConsole(FrameworkConsole):
@@ -52,13 +52,13 @@ class DronesploitConsole(FrameworkConsole):
     
     @property
     def man_interfaces(self):
-        return [i for i, x in self.state['INTERFACES'].items() if not x[0]]
+        return [i for i, x in self.state['INTERFACES'].items() if is_bool(x[0]) and not x[0]]
     
     @property
     def mon_interfaces(self):
-        return [i for i, x in self.state['INTERFACES'].items() if x[0]]
+        return [i for i, x in self.state['INTERFACES'].items() if is_bool(x[0]) and x[0]]
     
     @property
     def self_mac_addresses(self):
-        return [x[2] for x in self.state['INTERFACES'].values() if x[2] is not None]
+        return [x[2] for x in self.state['INTERFACES'].values() if is_bool(x[0]) and x[2] is not None]
 

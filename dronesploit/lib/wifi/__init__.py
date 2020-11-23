@@ -28,8 +28,8 @@ class WifiModule(Module):
         ): None,
     })
     path = "auxiliary/wifi"
-    requirements = {'state': {"INTERFACES": {None: [True, None, None]}}, 'system': ["wireless-tools/iwconfig"]}
-    requirements_messages = { 'state': {'INTERFACES': "At least one interface in monitor mode is required"}}
+    requirements = {'state': {'INTERFACES': {None: [True, None, None]}}, 'system': ["wireless-tools/iwconfig"]}
+    requirements_messages = {'state': {'INTERFACES': "At least one interface in monitor mode is required"}}
     
     def preload(self):
         return self.prerun()
