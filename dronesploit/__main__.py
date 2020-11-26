@@ -12,8 +12,8 @@ Dronesploit framework's launcher script.
 
 
 def at_exit():
-    pass#subprocess.call("service network-manager restart", shell=True)
-    #subprocess.call("reset", shell=True)
+    subprocess.call("service network-manager restart", shell=True)
+    subprocess.call("reset", shell=True)
 
 
 class DronesploitConsole(BaseConsole):
