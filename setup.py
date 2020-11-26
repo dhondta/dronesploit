@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import os
-import re
-import dronesploit
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
-datafiles = [("", ["LICENSE"])]
+data = {'': ["VERSION.txt"]}
 for folder in ["banners", "commands", "modules"]:
-    src = os.path.join("dronesploit", folder)
-    datafiles += [(d, [os.path.join(d, f) for f in files])
-                  for d, folders, files in os.walk(src)]
+    for root, _, files in os.walk(os.path.join("dronesploit", folder)):
+        _, root = root.split(os.path.sep, 1)
+        for f in files:
+            data[''].append(os.path.join(root, f))
 
-setup(data_files=datafiles)
+setup(package_data=data)
+
