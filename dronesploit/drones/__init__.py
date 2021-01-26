@@ -4,7 +4,7 @@ import socket
 from sploitkit import Module
 from time import sleep, time
 
-from lib.wifi import DeauthMixin
+from ..wifi import DeauthMixin
 
 
 class DroneModule(Module, DeauthMixin):

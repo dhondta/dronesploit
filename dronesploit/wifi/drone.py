@@ -9,6 +9,7 @@ __regex_set = lambda x: re.compile(x + r"[_\-][0-9a-zA-Z]{4,20}")
 
 
 DRONE_REGEX = {
+    'DJI Phantom':      __regex_set(r"PHANTOM\d?"),
     'DJI Tello':        __regex_set(r"TELLO"),
     'FPV Racing Drone': __regex_set(r"WIFI_FPV"),
     'Hobbico C-me':     __regex_set(r"C-me"),

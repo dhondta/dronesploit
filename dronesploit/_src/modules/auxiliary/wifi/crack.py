@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from lib.wifi import *
+from dronesploit.wifi import *
 
 
 WPA_HANDSHAKE_REGEX = re.compile(r"WPA handshake\:\s+(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})")

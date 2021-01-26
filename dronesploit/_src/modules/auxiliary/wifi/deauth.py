@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from lib.wifi import *
+from dronesploit.wifi import *
 
 
 class Deauth(WifiAttackModule, DeauthMixin):

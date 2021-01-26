@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 from dronesploit.__info__ import __author__, __copyright__, __email__, __license__, __version__
-from dronesploit.lib import DronesploitConsole as BaseConsole
+from dronesploit import DronesploitConsole
 from tinyscript import *
 
 
+__name__ = "__main__"
 __script__ = "dronesploit"
 __doc__    = """
 Dronesploit framework's launcher script.
@@ -13,15 +14,8 @@ Dronesploit framework's launcher script.
 
 def at_exit():
     subprocess.call("service network-manager restart", shell=True)
-    subprocess.call("reset", shell=True)
-
-
-class DronesploitConsole(BaseConsole):
-    sources = {
-        'banners':   "banners",
-        'entities':  ["commands", "models", "modules"],
-        'libraries': ".",
-    }
+    if not args.dev:
+        subprocess.call("reset", shell=True)
 
 
 def main():
