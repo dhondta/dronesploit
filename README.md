@@ -26,16 +26,15 @@ This project is available on [PyPi](https://pypi.python.org/pypi/dronesploit/) a
 pip3 install dronesploit
 ```
 
-# Basics
+## Basics
 
-## Interface
+### Interface
 
-![DroneSploit](https://dhondta.github.io/dronesploit/docs/img/dronesploit.png)
+<p align="center"><img src="https://github.com/dhondta/dronesploit/raw/master/docs/img/dronesploit.png"></p>
+<p align="center"><img src="https://github.com/dhondta/dronesploit/raw/master/docs/img/dronesploit-commands.png"></p>
 
-![DroneSploit command examples](https://dhondta.github.io/dronesploit/docs/img/dronesploit-commands.png)
-
-## Modules
+### Modules
 
 This example shows an example of module for DroneSploit aimed to change the password or the SSID of a particular model of drone.
 
-![DroneSploit module example](https://dhondta.github.io/dronesploit/docs/img/dronesploit-module.png)
+<p align="center"><img src="https://github.com/dhondta/dronesploit/raw/master/docs/img/dronesploit-module.png"></p>
