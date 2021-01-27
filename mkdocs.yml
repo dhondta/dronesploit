@@ -5,6 +5,7 @@ docs_dir: docs
 pages:
   - Introduction: index.md
   - 'Quick Start': quickstart.md
+  - 'New Modules': newmodules.md
   - Scenarios: scenario.md
   - Scenarios:
     - 'Hobbico C-me - Changing SSID': scenarios/hobbico-cme.md

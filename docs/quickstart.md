@@ -1,29 +1,6 @@
 ## 1. Startup
 
-```bash
-$ python3 main.py --help
-usage: ./main.py [--dev] [-h] [-v]
-
-Main
-
-optional arguments:
-  --dev          development mode (default: False)
-
-extra arguments:
-  -h, --help     show this help message and exit
-  -v, --verbose  verbose mode (default: False)
-```
-
-The console is started using the launcher `main.py`. It may ask for sudo rights as it must have the permission for setting WiFi interfaces.
-
-```bash
-$ python3 main.py
-[sudo] password for user:
-
-[...]
-```
-
-At startup, a banner is shown and a summary of the available modules is shown.
+At startup, a banner and the numbers of available modules are shown.
 
 ![](img/dronesploit.png "DroneSploit startup screen")
 
@@ -90,7 +67,6 @@ Now being into the context of a module, we now see the general commands again bu
 
 <br>
 
-
 ## 3. Listing available modules
 
 This can be achieved by executing the following command :
@@ -120,6 +96,10 @@ The `scan` command allows to quickly scan for targets (and requires a WiFi inter
 The `targets` command then allows to list the discovered targets and their characteristics.
 
 ![](img/targets-list.png "Displaying the list of targets")
+
+!!! warning "Scanning"
+    
+    For WiFi drones, the `scan` command only searches for drone targets based on regular expressions, meaning that the matching SSID's are those which are handled by the [related filter](https://github.com/dhondta/dronesploit/blob/master/dronesploit/wifi/drone.py). Any other SSID is ignored, so do not be scared if you see no result and there is no drone turned on in the vicinity ; this is normal.
 
 !!! note "Targets expiration"
     
