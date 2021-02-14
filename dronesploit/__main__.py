@@ -23,7 +23,7 @@ def main():
     initialize(exit_at_interrupt=False, sudo=True)
     c = DronesploitConsole(
         __scriptname__,
-        banner_section_styles={'title': {'fgcolor': "random"}},
+        banner_section_styles={'title': {'fgcolor': "lolcat"}},
         dev=args.dev,
     )
     if args.verbose:
