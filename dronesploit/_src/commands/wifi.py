@@ -104,10 +104,12 @@ class Targets(Command):
     def run(self):
         self.console.root.interfaces
         data = [["ESSID", "BSSID", "Channel", "Power", "Enc", "Cipher", "Auth", "Password", "Stations"]]
+        # parse targets from the state variable
         for essid, target in sorted(self.console.state['TARGETS'].items(), key=lambda x: x[0]):
             i = self.console.state['INTERFACES']
             c = any(x[1] == essid for x in i.values())
             rows = []
+            # for each target, get the value from its associated dictionary
             for i, h in enumerate(data[0]):
                 rows.append([""] * len(data[0]))
                 v = target[h.lower()]
@@ -117,6 +119,7 @@ class Targets(Command):
                 else:
                     v = [v]
                 for j, sv in enumerate(v):
+                    sv = sv or ""
                     if c:
                         sv = colored(sv, attrs=['bold'])
                     rows[j][i] = sv

@@ -39,7 +39,7 @@ class Wpa2pskCrack(WifiAttackModule, DeauthMixin):
         del self.temp_dir
     
     def preload(self):
-        self.temp_dir = self.files.tempdir()
+        self.temp_dir = self.files.tempdir.tempdir()
         self.__procs = []
         super(Wpa2pskCrack, self).preload()
     
