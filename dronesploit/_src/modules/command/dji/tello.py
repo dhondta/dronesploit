@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from dronesploit.drones.dji import TelloModule
-from dronesploit.wifi.mixin import WifiConnectMixin
+from dronesploit.wifi.mixin import ConnectMixin
 from sploitkit import *
 
 
@@ -19,7 +19,7 @@ class ChangeApPassword(TelloModule):
         self._change_ap_creds(self.config.option("TARGET").value, self.config.option("NEW_PASSWORD").value, False)
 
 
-class ChangeApSsid(TelloModule, WifiConnectMixin):
+class ChangeApSsid(TelloModule, ConnectMixin):
     """ Change the SSID of the target C-me's AP. """
     config = Config({
         Option(
@@ -46,24 +46,24 @@ class ChangeApSsid(TelloModule, WifiConnectMixin):
 class EmergencyStop(TelloModule):
     """ Stopping the target Tello in emergency. """
     def run(self):
-        self._send_upd_command("emergency")
+        self._send_udp_command("emergency")
 
 
 class GetSysInfo(TelloModule):
     """ Get system information from the target Tello. """
     def run(self):
-        self._send_upd_command("temp?")
+        self._send_udp_command("temp?")
         print_formatted_text(self._last_cmd_resp)
 
 
 class Land(TelloModule):
     """ Land the target Tello. """
     def run(self):
-        self._send_upd_command("land")
+        self._send_udp_command("land")
 
 
 class Takeoff(TelloModule):
     """ Takeoff the target Tello. """
     def run(self):
-        self._send_upd_command("takeoff")
+        self._send_udp_command("takeoff")
 

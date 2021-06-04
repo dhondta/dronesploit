@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from dronesploit.drones.hobbico import CmeModule
-from dronesploit.wifi.mixin import WifiConnectMixin
+from dronesploit.wifi.mixin import ConnectMixin
 from sploitkit import *
 
 
@@ -38,7 +38,7 @@ class ChangeApPassword(CmeModule):
         self._change_ap_creds(self.config.option("TARGET").value, self.config.option("NEW_PASSWORD").value, False)
 
 
-class ChangeApSsid(CmeModule, WifiConnectMixin):
+class ChangeApSsid(CmeModule, ConnectMixin):
     """ Change the SSID of the target C-me's AP. """
     config = Config({
         Option(

@@ -43,7 +43,9 @@ class DroneModule(Module, DeauthMixin):
         target_addr = (self.config.option("IP").value, self.config.option("FLYCTL_PORT").value)
         command_result = fly_params.get('result', lambda r: r)
         self._last_cmd_resp = None
+        # pre-processing function
         fly_params.get('pre', lambda *a: None)(s, target_addr, fly_params)
+        # handle TCP
         if sock_type == socket.SOCK_STREAM:
             try:
                 s.connect(target_addr)
@@ -78,6 +80,7 @@ class DroneModule(Module, DeauthMixin):
                 kwargs['retry'] -= 1
                 kwargs['deauth'] -= 1
                 return self.send_command(*args, **kwargs)
+        # handle UDP
         elif sock_type == socket.SOCK_DGRAM:
             success = None
             try:
@@ -99,5 +102,6 @@ class DroneModule(Module, DeauthMixin):
             finally:
                 s.close()
                 return success
+        # post-processing function
         fly_params.get('post', lambda *a: None)(s, target_addr, fly_params)
 

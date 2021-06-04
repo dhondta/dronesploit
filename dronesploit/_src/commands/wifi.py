@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
-import yaml
 from dronesploit.wifi import *
 from prompt_toolkit.formatted_text import ANSI
 from sploitkit import *
-from tinyscript.helpers import colored, is_iterable, BorderlessTable
+from tinyscript.helpers import colored, BorderlessTable
 
 
-class Connect(Command, WifiConnectMixin):
+class Connect(Command, ConnectMixin):
     """ Connect to an Access Point """
     def complete_values(self):
         targets = self.console.state['TARGETS']
@@ -14,7 +13,7 @@ class Connect(Command, WifiConnectMixin):
                 t not in self.console.root.connected_targets]
     
     def run(self, essid):
-        i = WifiConnectMixin.connect(self, essid)
+        i = self.connect(essid)
         if i is not None:
             self.logger.success("Connected to '{}' on {}".format(essid, i))
             self.console.state['INTERFACES'][i][1] = essid
@@ -22,13 +21,13 @@ class Connect(Command, WifiConnectMixin):
             self.logger.failure("Connection to {} failed".format(essid))
 
 
-class Disconnect(Command, WifiConnectMixin):
+class Disconnect(Command, ConnectMixin):
     """ Disconnect from an Access Point """
     def complete_values(self):
         return self.console.root.connected_targets
     
     def run(self, essid=None):
-        for e, ok in WifiConnectMixin.disconnect(self, essid):
+        for e, ok in self.disconnect(essid):
             if ok:
                 self.logger.success("Disconnected from {}".format(e))
             else:
@@ -65,7 +64,7 @@ class Scan(Command, ScanMixin):
         return [i for i, m in self.console.state['INTERFACES'].items() if m[0]]
     
     def run(self, interface, timeout=300):
-        ScanMixin.scan(self, interface, timeout)
+        self.scan(interface, timeout)
     
     def validate(self, interface, timeout=300):
         if interface not in self.console.root.interfaces:
@@ -74,29 +73,6 @@ class Scan(Command, ScanMixin):
             raise ValueError("wireless interface not in monitor mode")
         if int(timeout) <= 0:
             raise ValueError("must be greater than 0")
-
-
-class State(Command):
-    """ Display console's shared state """
-    requirements = {'config': {'DEBUG': True}}
-
-    def run(self):
-        self.console.root.interfaces
-        for k, v in self.console.state.items():
-            print_formatted_text("\n{}:".format(k))
-            v = v or ""
-            if len(v) == 0:
-                continue
-            if is_iterable(v):
-                if isinstance(v, dict):
-                    v = dict(**v)
-                for l in yaml.dump(v).split("\n"):
-                    if len(l.strip()) == 0:
-                        continue
-                    print_formatted_text("  " + l)
-            else:
-                print_formatted_text(v)
-        print_formatted_text("")
 
 
 class Targets(Command):

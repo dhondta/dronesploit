@@ -25,8 +25,7 @@ def main():
         __scriptname__,
         banner_section_styles={'title': {'fgcolor': "lolcat"}},
         dev=args.dev,
+        debug=args.verbose,
     )
-    if args.verbose:
-        c.execute("set DEBUG true")
     c.start()
 

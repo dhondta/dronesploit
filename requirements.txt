@@ -1,1 +1,1 @@
-sploitkit>=0.4.4
+sploitkit>=0.5.0

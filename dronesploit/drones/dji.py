@@ -69,7 +69,7 @@ class TelloModule(DJIModule):
         self.console.state['PASSWORDS'][ssid] = pswd
         return r
     
-    def _send_upd_command(self, command):
+    def _send_udp_command(self, command):
         msg = TelloModule.fly_params['commands'].get(command)
         if msg is not None:
             self.logger.info(msg[0])

@@ -3,7 +3,7 @@ import re
 from time import time
 
 
-__all__ = ["DeauthMixin", "ScanMixin", "WifiConnectMixin", "STATION_REGEX"]
+__all__ = ["DeauthMixin", "ScanMixin", "ConnectMixin", "STATION_REGEX"]
 
 CONNECT_REGEX = re.compile(r"(?m)Device '(?P<iface>[a-z][a-z0-9]*)' success"
                            r"fully activated with '(?P<uid>[0-9a-f\-]+)'\.")
@@ -23,6 +23,41 @@ TARGET_REGEX = re.compile(r"^\s*(?P<bssid>(?:[0-9A-F]{2}\:){5}[0-9A-F]{2})\s+"
                           r"(?P<cipher>\w*?)\s+"
                           r"(?P<auth>\w*?)\s+"
                           r"(?P<essid>[\w\-\.]+(?:\s+[\w\-\.]+)*)\s*$")
+
+
+class ConnectMixin(object):
+    """ Mixin class for use with Command and Module """
+    requirements = {'system': ["nmcli"]}
+
+    def connect(self, essid, retry=True):
+        pswd = self.console.state['TARGETS'][essid].get('password')
+        cmd = ["nmcli", "device", "wifi", "connect", essid]
+        if pswd is not None:
+            cmd += ["password", pswd]
+        out = self.console._jobs.run(cmd)[0]
+        if "No network with SSID" in out:
+            self.logger.warning("No network with this SSID is running")
+            raise Exception("No network with SSID '{}'".format(essid))
+        elif "Error: NetworkManager is not running." in out:
+            if retry:
+                self.disconnect()
+                self.console._jobs.run("service network-manager restart")
+                return self.connect(essid, False)
+            else:
+                raise Exception("Network Manager is not running")
+        m = CONNECT_REGEX.search(out)
+        if m is not None:
+            iface = m.group("iface")
+            self.console._jobs.run("dhclient " + iface + " &", shell=True)
+            return iface
+        
+    def disconnect(self, essid=None):
+        for iface, data in self.console.state['INTERFACES'].items():
+            if essid is not None and data[1] != essid:
+                continue
+            out = self.console._jobs.run(["nmcli", "device", "disconnect", "iface", iface])[0]
+            yield essid, "successfully disconnected." in out
+        self.console.root.interfaces  # this triggers refreshing the list of interfaces
 
 
 class DeauthMixin(object):
@@ -131,39 +166,4 @@ class ScanMixin(object):
         finally:
             s.lock()
             t.lock()
-
-
-class WifiConnectMixin(object):
-    """ Mixin class for use with Command and Module """
-    requirements = {'system': ["nmcli"]}
-
-    def connect(self, essid, retry=True):
-        pswd = self.console.state['TARGETS'][essid].get('password')
-        cmd = ["nmcli", "device", "wifi", "connect", essid]
-        if pswd is not None:
-            cmd += ["password", pswd]
-        out = self.console._jobs.run(cmd)[0]
-        if "No network with SSID" in out:
-            self.logger.warning("No network with this SSID is running")
-            raise Exception("No network with SSID '{}'".format(essid))
-        elif "Error: NetworkManager is not running." in out:
-            if retry:
-                self.disconnect()
-                self.console._jobs.run("service network-manager restart")
-                return self.connect(essid, False)
-            else:
-                raise Exception("Network Manager is not running")
-        m = CONNECT_REGEX.search(out)
-        if m is not None:
-            iface = m.group("iface")
-            self.console._jobs.run("dhclient " + iface + " &", shell=True)
-            return iface
-        
-    def disconnect(self, essid=None):
-        for iface, data in self.console.state['INTERFACES'].items():
-            if essid is not None and data[1] != essid:
-                continue
-            out = self.console._jobs.run(["nmcli", "device", "disconnect", "iface", iface])[0]
-            yield essid, "successfully disconnected." in out
-        self.console.root.interfaces
 
