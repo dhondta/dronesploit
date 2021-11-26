@@ -1,3 +1,4 @@
+<p align="center"><img src="https://github.com/dhondta/dronesploit/raw/master/docs/img/logo.png"></p>
 <h1 align="center">DroneSploit <a href="https://twitter.com/intent/tweet?text=DroneSploit%20-%20Console%20made%20with%20SploitKit%20for%20hacking%20light%20commercial%20drones.%0D%0Ahttps%3a%2f%2fgithub%2ecom%2fdhondta%2fdronesploit%0D%0A&hashtags=python,console,sploitkit,dronehacking,dronepentesting"><img src="https://img.shields.io/badge/Tweet--lightgrey?logo=twitter&style=social" alt="Tweet" height="20"/></a></h1>
 <h3 align="center">Easily pentest drones.</h3>
 
