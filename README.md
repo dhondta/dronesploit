@@ -1,3 +1,4 @@
+<p align="center"><img src="https://github.com/dhondta/dronesploit/raw/master/docs/img/logo.png"></p>
 <h1 align="center">DroneSploit <a href="https://twitter.com/intent/tweet?text=DroneSploit%20-%20Console%20made%20with%20SploitKit%20for%20hacking%20light%20commercial%20drones.%0D%0Ahttps%3a%2f%2fgithub%2ecom%2fdhondta%2fdronesploit%0D%0A&hashtags=python,console,sploitkit,dronehacking,dronepentesting"><img src="https://img.shields.io/badge/Tweet--lightgrey?logo=twitter&style=social" alt="Tweet" height="20"/></a></h1>
 <h3 align="center">Easily pentest drones.</h3>
 
@@ -6,6 +7,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/dronesploit.svg)](https://pypi.python.org/pypi/dronesploit/)
 [![Requirements Status](https://requires.io/github/dhondta/dronesploit/requirements.svg?branch=master)](https://requires.io/github/dhondta/dronesploit/requirements/?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/dhondta/dronesploit/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/dhondta/dronesploit?targetFile=requirements.txt)
+[![DOI](https://zenodo.org/badge/207086727.svg)](https://zenodo.org/badge/latestdoi/207086727)
 [![Black Hat Arsenal Europe 2019](https://img.shields.io/badge/Black%20Hat%20Arsenal-EU%202019-blue.svg)](https://www.blackhat.com/eu-19/arsenal/schedule/index.html#drone-hacking-with-dronesploit-18217)
 [![License](https://img.shields.io/badge/license-AGPL%20v3-lightgrey.svg)](https://github.com/dhondta/dronesploit/blob/master/LICENSE)
 
