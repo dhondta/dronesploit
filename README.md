@@ -18,6 +18,8 @@ This CLI framework is based on [`sploitkit`](https://github.com/dhondta/python-s
 pip3 install dronesploit
 ```
 
+> :warning: When starting up the framework, you may have every modules **disabled**. You can see why by using the `show issues` command. Modules are disabled when they have unsatisfied requirements, i.e. `aircrack-ng` not installed.
+
 ## :notebook_with_decorative_cover: Documentation
 
 - [Black Hat Europe Arsenal 2019 presentation](https://dhondta.github.io/dronesploit/docs/blackhat-eu19-arsenal.pdf)
