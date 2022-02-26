@@ -24,14 +24,13 @@ DRONE_REGEX = {
 
 
 def drone_filter(essid, model=None):
-    regexes = DRONE_REGEX
+    r = {k: (v if isinstance(v, list) else [v]) for k, v in DRONE_REGEX.items()}
     if model is not None:
-        if model not in DRONE_REGEX.keys():
+        if model not in r.keys():
             raise ValueError("Bad drone model")
-        m = DRONE_REGEX[model]
-        regexes = {model: m if isinstance(m, list) else [m]}
-    for _, r in regexes.items():
-        for regex in r:
+        r = {model: r[model]}
+    for _, rl in r.items():
+        for regex in rl:
             if regex.match(str(essid), re.I):
                 return True
     return False
