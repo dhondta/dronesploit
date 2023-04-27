@@ -101,7 +101,7 @@ The `targets` command then allows to list the discovered targets and their chara
 
 !!! warning "Scanning"
     
-    For WiFi drones, the `scan` command only searches for drone targets based on regular expressions, meaning that the matching SSID's are those which are handled by the [related filter](https://github.com/dhondta/dronesploit/blob/master/dronesploit/wifi/drone.py). Any other SSID is ignored, so do not be scared if you see no result and there is no drone turned on in the vicinity ; this is normal.
+    For WiFi drones, the `scan` command only searches for drone targets based on regular expressions, meaning that the matching SSID's are those which are handled by the [related filter](https://github.com/dhondta/dronesploit/blob/main/dronesploit/wifi/drone.py). Any other SSID is ignored, so do not be scared if you see no result and there is no drone turned on in the vicinity ; this is normal.
 
 !!! note "Targets expiration"
     
