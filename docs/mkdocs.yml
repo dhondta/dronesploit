@@ -1,0 +1,36 @@
+site_name: "DroneSploit - A Metasploit-like console for hacking drones"
+repo_url: https://github.com/dhondta/dronesploit
+site_author: dhondta
+docs_dir: docs
+nav:
+  - Introduction: index.md
+  - 'Quick Start': quickstart.md
+  - 'New Modules': newmodules.md
+  - Scenarios: scenario.md
+  - Scenarios:
+    - 'Hobbico C-me - Changing SSID': scenarios/hobbico-cme.md
+    - 'Hobbico Flitt - Power Off': scenarios/hobbico-flitt.md
+    - 'DJI Tello - Landing': scenarios/dji-tello.md
+extra:
+  mailto: alexandre.dhondt@gmail.com
+theme:
+  name: readthedocs
+  locale: en
+  highlightjs: true
+  navigation_depth: 8
+  collapse_navigation: true
+  hljs_languages:
+    - yaml
+    - python
+    - console
+extra_javascript:
+  - js/collapsible-navbar.js
+  - js/theme.js
+use_directory_urls: false
+markdown_extensions:
+  - admonition
+  - codehilite:
+      linenums: true
+  - pymdownx.details
+  - toc:
+      permalink: True
