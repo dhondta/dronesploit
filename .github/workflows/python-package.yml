@@ -1,0 +1,36 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: build
+
+env:
+  package: dronesploit
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install pandoc
+      run: sudo apt-get install -y pandoc
+    - name: Install ${{ env.package }}
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pytest pytest-cov pytest-pythonpath coverage
+        pip install -r requirements.txt
+        pip install .
