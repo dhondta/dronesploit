@@ -7,8 +7,8 @@ nav:
   - Introduction: index.md
   - 'Quick Start': quickstart.md
   - 'New Modules': newmodules.md
-  - Scenarios: scenario.md
   - Scenarios:
+    - scenarios/index.md
     - 'Hobbico C-me - Changing SSID': scenarios/hobbico-cme.md
     - 'Hobbico Flitt - Power Off': scenarios/hobbico-flitt.md
     - 'DJI Tello - Landing': scenarios/dji-tello.md
@@ -41,6 +41,10 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  features:
+    - navigation.indexes
+    - navigation.top
+    - toc.integrate
   logo: img/logo.png
   favicon: img/icon.png
   highlightjs: true
