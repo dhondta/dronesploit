@@ -27,6 +27,8 @@ extra:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/alex_dhondt
       name: Alex on Twitter
+extra_css:
+  - css/extra.css
 theme:
   name: material
   locale: en

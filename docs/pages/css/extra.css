@@ -1,0 +1,26 @@
+/* Full width (only works for some themes, including 'material') */
+@media only screen and (min-width: 76.25em) {
+  .md-main__inner {
+    max-width: none;
+  }
+  .md-sidebar--primary {
+    left: 0;
+  }
+  .md-sidebar--secondary {
+    right: 0;
+    margin-left: 0;
+    -webkit-transform: none;
+    transform: none;   
+  }
+}
+
+/* See https://github.com/mkdocs/mkdocs/wiki/MkDocs-Recipes */
+/* Add Support for Checkbox Lists */
+.task-list-item {
+  list-style-type: none;
+}
+
+.task-list-item input {
+  margin: 0 4px 0.25em -20px;
+  vertical-align: middle;
+}
