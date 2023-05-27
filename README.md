@@ -5,7 +5,6 @@
 [![PyPi](https://img.shields.io/pypi/v/dronesploit.svg)](https://pypi.python.org/pypi/dronesploit/)
 [![Read The Docs](https://readthedocs.org/projects/dronesploit/badge/?version=latest)](https://dronesploit.readthedocs.io/en/latest/?badge=latest)
 [![Python Versions](https://img.shields.io/pypi/pyversions/dronesploit.svg)](https://pypi.python.org/pypi/dronesploit/)
-[![Requirements Status](https://requires.io/github/dhondta/dronesploit/requirements.svg?branch=main)](https://requires.io/github/dhondta/dronesploit/requirements/?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/dhondta/dronesploit/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/dhondta/dronesploit?targetFile=requirements.txt)
 [![DOI](https://zenodo.org/badge/207086727.svg)](https://zenodo.org/badge/latestdoi/207086727)
 [![Black Hat Arsenal Europe 2019](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/europe/2019.svg?sanitize=true)](https://www.blackhat.com/eu-19/arsenal/schedule/index.html#drone-hacking-with-dronesploit-18217)
