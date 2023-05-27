@@ -9,7 +9,7 @@
 [![DOI](https://zenodo.org/badge/207086727.svg)](https://zenodo.org/badge/latestdoi/207086727)
 [![Black Hat Arsenal Europe 2019](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/europe/2019.svg?sanitize=true)](https://www.blackhat.com/eu-19/arsenal/schedule/index.html#drone-hacking-with-dronesploit-18217)
 [![License](https://img.shields.io/badge/license-AGPL%20v3-lightgrey.svg)](https://github.com/dhondta/dronesploit/blob/main/LICENSE)
-['[Contribution](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://dronesploit.readthedocs.io/en/latest/newmodules.html#new-modules)
+[![Contribution](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://dronesploit.readthedocs.io/en/latest/newmodules.html#new-modules)
 
 
 This CLI framework is based on [`sploitkit`](https://github.com/dhondta/python-sploitkit/) and is an attempt to gather hacking techniques and exploits especially focused on **drone hacking**. For the ease of use, the interface has a layout that looks like Metasploit.
