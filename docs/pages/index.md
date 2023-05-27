@@ -16,7 +16,7 @@ pip3 install dronesploit
 
 **Brand** | **Model** | **Picture**
 :---: | :---: | :---:
-Hobbico | Flitt Flying Selfie Camera | <img src="https://i.ebayimg.com/images/g/qvEAAOSwu~5fNfWD/s-l1600.jpg" alt="Hobbico Flitt" height="200"/>
-Hobbico | C-me Selfie Drone | <img src="https://wacmag.com/sites/default/files/styles/article_desktop_x1_865x520_/public/2020-09/9_2.webp?itok=xTyOBeAA" alt="Hobbico C-me" height="200"/>
-DJI | Tello | <img src="https://product3.djicdn.com/uploads/photos/33899/large_195b1c74-0da5-493f-9da7-21ff243d5874.jpg" alt="DJI Tello" height="200"/>
+Hobbico | Flitt Flying Selfie Camera | <img src="https://m.media-amazon.com/images/I/71gnE+GH+vL._AC_SL1500_.jpg" alt="Hobbico Flitt" width="200"/>
+Hobbico | C-me Selfie Drone | <img src="https://wacmag.com/sites/default/files/styles/article_desktop_x1_865x520_/public/2020-09/9_2.webp?itok=xTyOBeAA" alt="Hobbico C-me" width="200"/>
+DJI | Tello | <img src="https://product3.djicdn.com/uploads/photos/33899/large_195b1c74-0da5-493f-9da7-21ff243d5874.jpg" alt="DJI Tello" width="200"/>
 
