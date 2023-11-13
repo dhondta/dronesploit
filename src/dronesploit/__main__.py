@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--dev", action="store_true", help="development mode")
     initialize(exit_at_interrupt=False, sudo=True)
     c = DronesploitConsole(
-        __scriptname__,
+        "DroneSploit",
         banner_section_styles={'title': {'fgcolor': "lolcat"}},
         dev=args.dev,
         debug=args.verbose,

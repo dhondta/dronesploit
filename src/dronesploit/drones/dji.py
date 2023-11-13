@@ -3,7 +3,6 @@ import ast
 import socket
 import time
 from datetime import datetime
-from sploitkit import *
 
 from . import DroneModule
 from ..wifi import drone_filter

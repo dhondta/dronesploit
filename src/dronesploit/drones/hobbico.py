@@ -2,7 +2,6 @@
 import time
 import yaml
 from datetime import datetime
-from sploitkit import *
 
 from . import DroneModule
 from ..generic import ftp

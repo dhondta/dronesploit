@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from dronesploit.drones.dji import TelloModule
 from dronesploit.wifi.mixin import ConnectMixin
-from sploitkit import *
 
 
 class ChangeApPassword(TelloModule):

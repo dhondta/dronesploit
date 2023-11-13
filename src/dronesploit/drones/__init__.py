@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import ast
 import socket
-from sploitkit import Module
 from time import sleep, time
 
 from ..wifi import DeauthMixin

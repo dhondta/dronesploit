@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 from time import time
-from sploitkit import Config, Module, Option
-from tinyscript.helpers import Path
 
 from .drone import *
 from .mixin import *
@@ -10,7 +8,6 @@ from .mixin import *
 __all__ = [
     "re",
     "drone_filter", "time",
-    "Config", "Module", "Option", "Path",
     "DeauthMixin", "ScanMixin", "ConnectMixin",
     "WifiModule", "WifiAttackModule",
     "STATION_REGEX",

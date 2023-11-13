@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from dronesploit.wifi import *
 from prompt_toolkit.formatted_text import ANSI
-from sploitkit import *
 from tinyscript.helpers import colored, BorderlessTable
 
 

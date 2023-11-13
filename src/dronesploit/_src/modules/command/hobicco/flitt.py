@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 from dronesploit.drones.hobbico import FlittCommandModule
-from sploitkit import *
 
 
 class ChangeDatetime(FlittCommandModule):

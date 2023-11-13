@@ -1,10 +1,24 @@
 #!/usr/bin/python3
+# -*- coding: UTF-8 -*-
+from tinyscript import logging
+#FIXME: process deprecation warnings
+logging.captureWarnings(True)
+
+import builtins as bi
 import re
-from sploitkit import FrameworkConsole
-from tinyscript.helpers import is_bool, ExpiringDict, Path
+from sploitkit import *
+from tinyscript.helpers import is_bool, ExpiringDict
 
 
 __all__ = ["DronesploitConsole"]
+
+
+bi.Command = Command
+bi.Config = Config
+bi.FrameworkConsole = FrameworkConsole
+bi.Module = Module
+bi.Option = Option
+bi.Path = Path
 
 
 class DronesploitConsole(FrameworkConsole):

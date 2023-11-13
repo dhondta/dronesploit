@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from dronesploit.drones.hobbico import CmeModule
 from dronesploit.wifi.mixin import ConnectMixin
-from sploitkit import *
 
 
 class ChangeDatetime(CmeModule):

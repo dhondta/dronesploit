@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from sploitkit import *
 from tinyscript.helpers import is_iterable
 from yaml import dump
 
