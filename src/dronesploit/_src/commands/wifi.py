@@ -36,8 +36,7 @@ class Disconnect(Command, ConnectMixin):
 class Password(Command):
     """ Manually set the password of an Access Point """
     def complete_keys(self):
-        targets = self.console.state['TARGETS']
-        return [t for t in targets.keys() if 'password' in targets[t]]
+        return [t for t, d in self.console.state['TARGETS'].items() if 'password' in d.keys()]
     
     def complete_values(self, target=None):
         return self.console.state['PASSWORDS'].values()
@@ -103,6 +102,7 @@ class Targets(Command):
                     continue
                 data.append(r)
         if len(data) > 1:
+            from prompt_toolkit import print_formatted_text
             t = BorderlessTable(data, "Available Targets")
             print_formatted_text(ANSI(t.table))
         else:
@@ -151,7 +151,7 @@ class Toggle(Command):
                     self.console._jobs.run("sudo rfkill unblock %s" % parts[0])
         self.console._jobs.run("service network-manager restart")
         self.console.root.interfaces  # this refreshes the state with INTERFACES
-        Entity.check()
+        self.__class__.check()
     
     def validate(self, interface):
         if interface not in self.console.root.interfaces:

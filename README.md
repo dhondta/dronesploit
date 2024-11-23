@@ -22,7 +22,7 @@ pip3 install dronesploit
 
 ## :notebook_with_decorative_cover: Documentation
 
-- [Black Hat Europe Arsenal 2019 presentation](https://dhondta.github.io/dronesploit/docs/pages/blackhat-eu19-arsenal.pdf)
+- [Black Hat Europe Arsenal 2019 presentation](https://raw.githubusercontent.com/dhondta/dronesploit/main/docs/pages/blackhat-eu19-arsenal.pdf)
 - [*Black Hat Europe: New tool offers Metasploit-like framework for hacking into drones*, The Daily Swig](https://portswigger.net/daily-swig/black-hat-europe-new-tool-offers-metasploit-like-framework-for-hacking-into-drones)
 - [*Dronesploit, a pentesting console framework dedicated to drones*, Hakin9](https://hakin9.org/dronesploit-a-pentesting-console-framework-dedicated-to-drones/)
 

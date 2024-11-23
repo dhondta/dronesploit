@@ -8,6 +8,7 @@ class State(Command):
     requirements = {'config': {'DEBUG': True}}
     
     def run(self):
+        from prompt_toolkit import print_formatted_text
         self.console.root.interfaces
         for k, v in self.console.state.items():
             print_formatted_text("\n{}:".format(k))

@@ -5,7 +5,7 @@ import re
 __all__ = ["drone_filter", "re"]
 
 
-__r = lambda x: re.compile(x + r"[_\-][0-9A-Z]{4,20}")
+__r = lambda x, suffix=r"[_\-][0-9A-Z]{4,20}": re.compile(x + suffix)
 
 
 DRONE_REGEX = {
@@ -15,11 +15,11 @@ DRONE_REGEX = {
     'DJI Spark':        __r(r"Spark"),
     'DJI Tello':        __r(r"TELLO"),
     'FPV Racing Drone': __r(r"WIFI_FPV"),
+    'Generic':          __r(r"Drone\d?"),
     'Hobbico C-me':     __r(r"C-me"),
-    'Hobbico Flitt':    __r(r"Flitt"),
-    'Hubsan':           __r(r"HUBSAN_[A-Z]{1,2}\d+[A-Z]?"),
+    'Hobbico Flitt':    __r(r"Flitt_[a-zA-Z]{6-8}", ""),
+    'Hubsan':           __r(r"HUBSAN_[A-Z]{1,2}\d+[A-Z]?", ""),
     'Parrot Bebop':     __r(r"Bebop\d?"),
-    'Unknown':          __r(r"Drone\d?"),
 }
 
 
